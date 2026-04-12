@@ -62,7 +62,7 @@ const Index = () => {
               <img
                 src={heroMan}
                 alt="Mann nach erfolgreicher Behandlung"
-                className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover object-[center_25%] group-hover:scale-105 transition-transform duration-700"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
               <div className="relative z-10 flex flex-col justify-end h-full p-8 text-primary-foreground">
