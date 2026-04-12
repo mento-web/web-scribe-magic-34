@@ -36,7 +36,7 @@ const Index = () => {
             {/* Product Card */}
             <Link
               to="/survey/men"
-              className="group relative overflow-hidden rounded-3xl bg-secondary aspect-[4/3] md:aspect-auto md:row-span-2 flex flex-col justify-between p-8"
+              className="group relative overflow-hidden rounded-3xl bg-secondary aspect-[3/4] md:aspect-auto md:row-span-2 flex flex-col justify-between p-8"
             >
               <div>
                 <p className="text-sm font-medium text-muted-foreground mb-1">GLP-1 Therapie</p>
@@ -57,7 +57,7 @@ const Index = () => {
             {/* Men Card */}
             <Link
               to="/survey/men"
-              className="group relative overflow-hidden rounded-3xl aspect-[16/10] md:aspect-auto"
+              className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-auto"
             >
               <img
                 src={heroMan}
@@ -77,7 +77,7 @@ const Index = () => {
             {/* Women Card */}
             <Link
               to="/survey/women"
-              className="group relative overflow-hidden rounded-3xl aspect-[16/10] md:aspect-auto"
+              className="group relative overflow-hidden rounded-3xl aspect-[4/3] md:aspect-auto"
             >
               <img
                 src={heroWoman}
