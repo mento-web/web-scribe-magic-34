@@ -26,9 +26,9 @@ const Index = () => {
       <section className="pt-24 pb-6 px-4">
         <div className="container mx-auto">
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-8 max-w-4xl">
-            Die Behandlung,
+            Starten Sie Ihre
             <br />
-            die Sie <span className="text-accent">verdienen.</span>
+            <span className="text-accent">Gewichtsreise.</span>
           </h1>
 
           {/* Bento Cards */}
