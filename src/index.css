@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,39 +6,38 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 160 10% 10%;
+    --background: 40 33% 98%;
+    --foreground: 20 10% 10%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 160 10% 10%;
+    --card: 40 30% 96%;
+    --card-foreground: 20 10% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 10% 10%;
+    --popover-foreground: 20 10% 10%;
 
-    --primary: 160 45% 28%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 20 10% 10%;
+    --primary-foreground: 40 33% 98%;
 
-    --secondary: 150 20% 95%;
-    --secondary-foreground: 160 45% 28%;
+    --secondary: 35 30% 91%;
+    --secondary-foreground: 20 10% 10%;
 
-    --muted: 150 10% 96%;
-    --muted-foreground: 160 5% 45%;
+    --muted: 35 20% 93%;
+    --muted-foreground: 20 5% 45%;
 
-    --accent: 160 50% 40%;
+    --accent: 32 80% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 150 10% 90%;
-    --input: 150 10% 90%;
-    --ring: 160 45% 28%;
+    --border: 35 15% 90%;
+    --input: 35 15% 88%;
+    --ring: 20 10% 10%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --hero-bg: 160 30% 18%;
-    --hero-foreground: 0 0% 100%;
-    --trust-bar-bg: 150 20% 95%;
+    --hero-bg: 35 30% 91%;
+    --hero-foreground: 20 10% 10%;
     --success: 145 60% 40%;
     --warning: 35 90% 55%;
 
@@ -53,25 +52,25 @@
   }
 
   .dark {
-    --background: 160 15% 8%;
-    --foreground: 150 10% 95%;
-    --card: 160 15% 12%;
-    --card-foreground: 150 10% 95%;
-    --popover: 160 15% 12%;
-    --popover-foreground: 150 10% 95%;
-    --primary: 160 45% 45%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 160 20% 18%;
-    --secondary-foreground: 150 10% 95%;
-    --muted: 160 15% 18%;
-    --muted-foreground: 150 10% 60%;
-    --accent: 160 50% 45%;
+    --background: 20 10% 6%;
+    --foreground: 35 20% 95%;
+    --card: 20 10% 10%;
+    --card-foreground: 35 20% 95%;
+    --popover: 20 10% 10%;
+    --popover-foreground: 35 20% 95%;
+    --primary: 35 30% 91%;
+    --primary-foreground: 20 10% 6%;
+    --secondary: 20 10% 15%;
+    --secondary-foreground: 35 20% 95%;
+    --muted: 20 10% 15%;
+    --muted-foreground: 35 10% 55%;
+    --accent: 32 80% 55%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
-    --border: 160 15% 20%;
-    --input: 160 15% 20%;
-    --ring: 160 45% 45%;
+    --border: 20 10% 18%;
+    --input: 20 10% 18%;
+    --ring: 35 30% 91%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -90,12 +89,12 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'DM Sans', sans-serif;
   }
 }
 
 @layer utilities {
   .hero-gradient {
-    background: linear-gradient(135deg, hsl(160 30% 18%) 0%, hsl(160 40% 24%) 50%, hsl(155 35% 20%) 100%);
+    background: hsl(var(--hero-bg));
   }
 }
