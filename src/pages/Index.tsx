@@ -226,6 +226,11 @@ const Index = () => {
                 Ärztlich begleitete Gewichtstherapie in der Schweiz.
               </p>
             </div>
+            <div className="flex flex-col gap-2 text-sm">
+              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
+                FAQ
+              </Link>
+            </div>
             <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
               <p>© {new Date().getFullYear()} SwissVita. Alle Rechte vorbehalten.</p>
               <p className="text-xs">
