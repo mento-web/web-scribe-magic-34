@@ -36,21 +36,31 @@ const Index = () => {
             {/* Product Card */}
             <Link
               to="/survey/men"
-              className="group relative overflow-hidden rounded-3xl bg-secondary aspect-[3/4] md:aspect-auto md:row-span-2 flex flex-col justify-between p-8"
+              className="group relative overflow-hidden rounded-3xl bg-secondary md:row-span-2 flex flex-col p-8 md:p-10 min-h-[420px]"
             >
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">GLP-1 Therapie</p>
-                <h2 className="text-2xl md:text-3xl font-bold">
-                  Starten Sie Ihre<br />Gewichtsreise heute
+              {/* Top: text */}
+              <div className="relative z-10">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+                  GLP-1 Therapie
+                </p>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.05] max-w-xs">
+                  Starten Sie Ihre Gewichtsreise heute
                 </h2>
               </div>
-              <img
-                src={heroProduct}
-                alt="GLP-1 Injektionspen"
-                className="absolute bottom-0 right-0 w-3/5 md:w-1/2 object-contain translate-y-4 translate-x-4 group-hover:translate-y-2 transition-transform duration-500"
-              />
-              <div className="relative z-10 flex items-center gap-2 text-sm font-semibold mt-auto">
-                Fragebogen starten <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+
+              {/* Middle: product image, contained and centered */}
+              <div className="relative flex-1 flex items-center justify-center my-8 md:my-10 min-h-[200px]">
+                <img
+                  src={heroProduct}
+                  alt="GLP-1 Injektionspen"
+                  className="max-h-[280px] md:max-h-[360px] w-auto object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
+                />
+              </div>
+
+              {/* Bottom: CTA */}
+              <div className="relative z-10 flex items-center gap-2 text-sm font-semibold">
+                Fragebogen starten
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </div>
             </Link>
 
