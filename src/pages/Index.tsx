@@ -57,7 +57,7 @@ const Index = () => {
             {/* Men Card */}
             <Link
               to="/survey/men"
-              className="group relative overflow-hidden rounded-3xl aspect-[5/4] md:aspect-[5/4]"
+              className="group relative overflow-hidden rounded-3xl aspect-[7/5] md:aspect-[7/5]"
             >
               <img
                 src={heroMan}
@@ -77,7 +77,7 @@ const Index = () => {
             {/* Women Card */}
             <Link
               to="/survey/women"
-              className="group relative overflow-hidden rounded-3xl aspect-[5/4] md:aspect-[5/4]"
+              className="group relative overflow-hidden rounded-3xl aspect-[7/5] md:aspect-[7/5]"
             >
               <img
                 src={heroWoman}
