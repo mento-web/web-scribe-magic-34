@@ -10,15 +10,20 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Nav */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto flex items-center justify-between h-16 px-4">
+        <div className="container mx-auto flex items-center justify-between h-16 px-4 gap-4">
           <Link to="/" className="text-2xl font-bold tracking-tight text-foreground">
             swissvita
           </Link>
-          <Link to="/survey/women">
-            <Button className="rounded-full px-6 text-sm font-medium">
-              Jetzt starten
-            </Button>
-          </Link>
+          <div className="flex items-center gap-6">
+            <a href="#bmi-rechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              BMI Rechner
+            </a>
+            <Link to="/survey/women">
+              <Button className="rounded-full px-6 text-sm font-medium">
+                Jetzt starten
+              </Button>
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -124,6 +129,26 @@ const Index = () => {
                 <span className="text-sm font-medium">{item.label}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* BMI Rechner */}
+      <section id="bmi-rechner" className="py-20 px-4 scroll-mt-24">
+        <div className="container mx-auto max-w-4xl rounded-3xl bg-card p-8 md:p-12">
+          <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">BMI Rechner</p>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            Schnell prüfen, ob Ihr BMI im relevanten Bereich liegt
+          </h2>
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">
+            Nutzen Sie unseren BMI Rechner als ersten Richtwert. Für eine medizinische Einschätzung und geeignete Therapieoptionen starten Sie anschliessend den Fragebogen.
+          </p>
+          <div className="mt-8">
+            <Link to="/survey/women">
+              <Button className="rounded-full px-6 text-sm font-medium">
+                Zum Fragebogen
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
