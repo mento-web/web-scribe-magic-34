@@ -1,12 +1,8 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 
 interface Question {
   id: string;
@@ -170,11 +166,10 @@ const Survey = () => {
     else setShowResult(true);
   };
 
-  const prev = () => {
+  const prevStep = () => {
     if (step > 0) setStep((s) => s - 1);
   };
 
-  // Determine result
   const getResult = () => {
     const bmiData = answers["bmi"] as Record<string, string> | undefined;
     const pregnancyAnswer = answers["women-specific"];
@@ -199,59 +194,61 @@ const Survey = () => {
   if (showResult) {
     const result = getResult();
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-lg w-full text-center">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="max-w-xl w-full text-center">
           {result === "eligible" ? (
             <>
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="h-8 w-8 text-primary" />
+              <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-8">
+                <CheckCircle className="h-10 w-10 text-accent" strokeWidth={1.5} />
               </div>
-              <h1 className="text-3xl font-bold mb-3">Sie könnten geeignet sein!</h1>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Sie könnten geeignet sein.</h1>
+              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
                 Basierend auf Ihren Angaben könnten Sie für eine ärztlich begleitete GLP-1 Therapie in Frage kommen. Ein Schweizer Arzt wird Ihre Angaben prüfen und sich bei Ihnen melden.
               </p>
-              <p className="text-sm text-muted-foreground mb-8">
-                Behandlungskosten ab CHF 299/Monat inkl. ärztlicher Betreuung.
-              </p>
+              <div className="bg-card rounded-2xl p-6 mb-8">
+                <p className="text-sm text-muted-foreground">Behandlungskosten</p>
+                <p className="text-2xl font-bold">ab CHF 299/Monat</p>
+                <p className="text-xs text-muted-foreground mt-1">inkl. ärztlicher Betreuung</p>
+              </div>
             </>
           ) : result === "borderline" ? (
             <>
-              <div className="w-16 h-16 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-6">
-                <AlertTriangle className="h-8 w-8 text-warning" />
+              <div className="w-20 h-20 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-8">
+                <AlertTriangle className="h-10 w-10 text-warning" strokeWidth={1.5} />
               </div>
-              <h1 className="text-3xl font-bold mb-3">Ärztliche Beratung empfohlen</h1>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Ärztliche Beratung empfohlen.</h1>
+              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
                 Basierend auf Ihren Angaben empfehlen wir ein persönliches Gespräch mit einem unserer Ärzte, um die beste Behandlung für Sie zu bestimmen.
               </p>
             </>
           ) : result === "low-bmi" ? (
             <>
-              <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                <Shield className="h-8 w-8 text-muted-foreground" />
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-8">
+                <Shield className="h-10 w-10 text-muted-foreground" strokeWidth={1.5} />
               </div>
-              <h1 className="text-3xl font-bold mb-3">Aktuell nicht empfohlen</h1>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Aktuell nicht empfohlen.</h1>
+              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
                 Ihr BMI liegt im Normalbereich. Eine GLP-1 Therapie wird in der Regel erst ab einem BMI von 27+ empfohlen. Sprechen Sie mit Ihrem Hausarzt über Ihre Möglichkeiten.
               </p>
             </>
           ) : (
             <>
-              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-6">
-                <AlertTriangle className="h-8 w-8 text-destructive" />
+              <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-8">
+                <AlertTriangle className="h-10 w-10 text-destructive" strokeWidth={1.5} />
               </div>
-              <h1 className="text-3xl font-bold mb-3">Nicht geeignet</h1>
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Nicht geeignet.</h1>
+              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
                 GLP-1 Medikamente sind während der Schwangerschaft oder bei Schwangerschaftsplanung nicht geeignet. Bitte konsultieren Sie Ihren Arzt für alternative Möglichkeiten.
               </p>
             </>
           )}
           <Link to="/">
-            <Button variant="outline" className="gap-2">
-              <ArrowLeft className="h-4 w-4" /> Zurück zur Startseite
+            <Button size="lg" className="gap-2 rounded-full px-8 h-12">
+              Zurück zur Startseite
             </Button>
           </Link>
-          <p className="text-xs text-muted-foreground mt-8">
-            Hinweis: Diese Einschätzung ersetzt keine ärztliche Diagnose. Alle Behandlungen erfolgen gemäss Schweizer Heilmittelgesetz (HMG) und unter ärztlicher Aufsicht.
+          <p className="text-xs text-muted-foreground mt-10 max-w-md mx-auto">
+            Diese Einschätzung ersetzt keine ärztliche Diagnose. Alle Behandlungen erfolgen gemäss Schweizer Heilmittelgesetz (HMG) und unter ärztlicher Aufsicht.
           </p>
         </div>
       </div>
@@ -259,97 +256,140 @@ const Survey = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="container mx-auto flex items-center justify-between h-14 px-4">
-          <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Abbrechen
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto flex items-center justify-between h-16 px-6 max-w-2xl">
+          <button
+            onClick={prevStep}
+            disabled={step === 0}
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <ArrowLeft className="h-4 w-4" /> Zurück
+          </button>
+          <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">{genderLabel} · {step + 1} / {questions.length}</span>
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            Abbrechen
           </Link>
-          <span className="text-sm font-medium">Fragebogen — {genderLabel}</span>
-          <span className="text-sm text-muted-foreground">{step + 1}/{questions.length}</span>
         </div>
-        <Progress value={progress} className="h-1 rounded-none" />
+        {/* Slim progress bar */}
+        <div className="h-0.5 bg-border/60">
+          <div
+            className="h-full bg-foreground transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12 max-w-xl">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-1">{current.title}</h2>
-          {current.subtitle && (
-            <p className="text-sm text-muted-foreground">{current.subtitle}</p>
+      <main className="flex-1 flex items-start md:items-center">
+        <div className="container mx-auto px-6 py-10 md:py-16 max-w-2xl w-full">
+          <div className="mb-10 md:mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-3">{current.title}</h2>
+            {current.subtitle && (
+              <p className="text-base text-muted-foreground leading-relaxed">{current.subtitle}</p>
+            )}
+          </div>
+
+          {/* Radio */}
+          {current.type === "radio" && (
+            <div className="space-y-3">
+              {current.options!.map((opt) => {
+                const selected = answers[current.id] === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleRadio(opt.value)}
+                    className={`w-full flex items-center justify-between gap-4 px-5 py-5 rounded-2xl border-2 text-left transition-all ${
+                      selected
+                        ? "border-foreground bg-card"
+                        : "border-border hover:border-foreground/40 bg-background"
+                    }`}
+                  >
+                    <span className="font-medium text-base">{opt.label}</span>
+                    <span
+                      className={`flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        selected ? "border-foreground bg-foreground" : "border-border"
+                      }`}
+                    >
+                      {selected && <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Number pair */}
+          {current.type === "number-pair" && (
+            <div className="grid grid-cols-2 gap-4">
+              {current.fields!.map((field) => (
+                <div key={field.id}>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">{field.label}</label>
+                  <div className="relative">
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder={field.placeholder}
+                      value={(answers[current.id] as Record<string, string>)?.[field.id] || ""}
+                      onChange={(e) => handleNumberField(field.id, e.target.value)}
+                      className="h-14 text-lg font-medium pr-12 rounded-2xl border-2 focus-visible:ring-0 focus-visible:border-foreground"
+                    />
+                    {field.suffix && (
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">{field.suffix}</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Checkbox */}
+          {current.type === "checkbox" && (
+            <div className="space-y-3">
+              {current.options!.map((opt) => {
+                const checked = ((answers[current.id] as string[]) || []).includes(opt.value);
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => handleCheckbox(opt.value, !checked)}
+                    className={`w-full flex items-center justify-between gap-4 px-5 py-5 rounded-2xl border-2 text-left transition-all ${
+                      checked
+                        ? "border-foreground bg-card"
+                        : "border-border hover:border-foreground/40 bg-background"
+                    }`}
+                  >
+                    <span className="font-medium text-base">{opt.label}</span>
+                    <span
+                      className={`flex-shrink-0 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all ${
+                        checked ? "border-foreground bg-foreground" : "border-border"
+                      }`}
+                    >
+                      {checked && <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           )}
         </div>
+      </main>
 
-        {/* Radio */}
-        {current.type === "radio" && (
-          <RadioGroup value={answers[current.id] as string || ""} onValueChange={handleRadio} className="space-y-3">
-            {current.options!.map((opt) => (
-              <label
-                key={opt.value}
-                className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${
-                  answers[current.id] === opt.value ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:border-primary/40"
-                }`}
-              >
-                <RadioGroupItem value={opt.value} id={opt.value} />
-                <Label htmlFor={opt.value} className="cursor-pointer font-medium text-sm flex-1">{opt.label}</Label>
-              </label>
-            ))}
-          </RadioGroup>
-        )}
-
-        {/* Number pair */}
-        {current.type === "number-pair" && (
-          <div className="grid grid-cols-2 gap-4">
-            {current.fields!.map((field) => (
-              <div key={field.id}>
-                <Label className="text-sm mb-2 block">{field.label}</Label>
-                <div className="relative">
-                  <Input
-                    type="number"
-                    placeholder={field.placeholder}
-                    value={(answers[current.id] as Record<string, string>)?.[field.id] || ""}
-                    onChange={(e) => handleNumberField(field.id, e.target.value)}
-                    className="pr-10"
-                  />
-                  {field.suffix && (
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">{field.suffix}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Checkbox */}
-        {current.type === "checkbox" && (
-          <div className="space-y-3">
-            {current.options!.map((opt) => {
-              const checked = ((answers[current.id] as string[]) || []).includes(opt.value);
-              return (
-                <label
-                  key={opt.value}
-                  className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-all ${
-                    checked ? "border-primary bg-primary/5 ring-1 ring-primary" : "hover:border-primary/40"
-                  }`}
-                >
-                  <Checkbox checked={checked} onCheckedChange={(c) => handleCheckbox(opt.value, !!c)} />
-                  <span className="font-medium text-sm">{opt.label}</span>
-                </label>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="flex justify-between mt-10">
-          <Button variant="ghost" onClick={prev} disabled={step === 0} className="gap-2">
-            <ArrowLeft className="h-4 w-4" /> Zurück
-          </Button>
-          <Button onClick={next} disabled={!canProceed} className="gap-2">
-            {step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"} <ArrowRight className="h-4 w-4" />
+      {/* Sticky bottom CTA */}
+      <div className="sticky bottom-0 bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-6">
+        <div className="container mx-auto px-6 max-w-2xl">
+          <Button
+            onClick={next}
+            disabled={!canProceed}
+            size="lg"
+            className="w-full h-14 rounded-full text-base font-semibold gap-2 disabled:opacity-30"
+          >
+            {step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
