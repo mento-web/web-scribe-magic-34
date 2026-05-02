@@ -18,6 +18,9 @@ const Index = () => {
             <a href="#bmi-rechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               BMI Rechner
             </a>
+            <Link to="/proteinrechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Proteinrechner
+            </Link>
             <Link to="/survey/women">
               <Button className="rounded-full px-6 text-sm font-medium">
                 Jetzt starten
@@ -254,6 +257,9 @@ const Index = () => {
             <div className="flex flex-col gap-2 text-sm">
               <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                 FAQ
+              </Link>
+              <Link to="/proteinrechner" className="text-muted-foreground hover:text-foreground transition-colors">
+                Proteinrechner
               </Link>
             </div>
             <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
