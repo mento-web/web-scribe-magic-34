@@ -196,11 +196,11 @@ const Index = () => {
               { icon: CheckCircle, label: "Transparente Preise in CHF" },
               { icon: Truck, label: "Diskrete Lieferung" },
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-card">
+              <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-card h-full min-h-[72px]">
                 <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center shrink-0">
                   <item.icon className="h-5 w-5 text-foreground" />
                 </div>
-                <span className="text-sm font-medium">{item.label}</span>
+                <span className="text-sm font-medium leading-tight">{item.label}</span>
               </div>
             ))}
           </div>
