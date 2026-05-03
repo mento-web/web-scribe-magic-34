@@ -258,15 +258,9 @@ const Index = () => {
               <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                 FAQ
               </Link>
-<<<<<<< HEAD
-=======
-              <Link to="/proteinrechner" className="text-muted-foreground hover:text-foreground transition-colors">
-                Proteinrechner
+              <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+                Preise
               </Link>
-              <Link to="/blogs" className="text-muted-foreground hover:text-foreground transition-colors">
-                Blog
-              </Link>
->>>>>>> 22dd4d6 (Add Pricing page at /pricing with three CHF plans)
             </div>
             <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
               <p>© {new Date().getFullYear()} Helvi. Alle Rechte vorbehalten.</p>
