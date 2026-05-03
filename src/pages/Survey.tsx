@@ -670,16 +670,16 @@ const Survey = () => {
         </main>
 
         {showCta && (
-          <div className="sticky bottom-0 px-5 pb-8 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+          <div className="sticky bottom-0 px-5 pb-6 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
             <div className="container mx-auto max-w-xl">
               <Button
                 onClick={advance}
                 disabled={!canProceed}
                 size="lg"
-                className="w-full h-13 rounded-full text-base font-semibold gap-2 disabled:opacity-20"
+                className="w-full h-16 rounded-2xl text-base font-semibold gap-2 disabled:opacity-20"
               >
                 {current.id === "age" ? "Analyse anzeigen" : step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-5 w-5" />
               </Button>
             </div>
           </div>
