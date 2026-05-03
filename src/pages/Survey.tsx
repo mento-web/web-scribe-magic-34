@@ -146,9 +146,12 @@ const BmiInterstitial = ({
   const bmi = h > 0 && w > 0 ? w / (h * h) : 0;
   const bmiTarget = Math.round(bmi * 10) / 10;
 
-  const loss1m = Math.max(1, Math.round(w * 0.025));
-  const loss3m = Math.max(2, Math.round(w * 0.05));
-  const loss6m = Math.max(3, Math.round(w * 0.09));
+  const showProjections = bmi > 25;
+  const minWeight = 23 * h * h;
+  const maxLoss = Math.max(0, w - minWeight);
+  const loss1m = Math.min(Math.max(1, Math.round(w * 0.025)), maxLoss);
+  const loss3m = Math.min(Math.max(2, Math.round(w * 0.05)), maxLoss);
+  const loss6m = Math.min(Math.max(3, Math.round(w * 0.09)), maxLoss);
   const targetWeight = w > 0 ? Math.round((w - loss6m) * 10) / 10 : 0;
 
   const [displayBmi, setDisplayBmi] = useState(0);
@@ -230,51 +233,53 @@ const BmiInterstitial = ({
               </div>
             </div>
 
-            {/* Weight loss projections */}
-            <div
-              className="transition-all duration-500 ease-out"
-              style={{ opacity: showDetails ? 1 : 0, transform: showDetails ? 'translateY(0)' : 'translateY(12px)' }}
-            >
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-5">
-                Mit GLP-1 könnten Sie verlieren
-              </p>
+            {/* Weight loss projections — only for BMI > 25 */}
+            {showProjections && (
+              <div
+                className="transition-all duration-500 ease-out"
+                style={{ opacity: showDetails ? 1 : 0, transform: showDetails ? 'translateY(0)' : 'translateY(12px)' }}
+              >
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-5">
+                  Mit GLP-1 könnten Sie verlieren
+                </p>
 
-              <div className="space-y-5 mb-8">
-                {([
-                  { label: "In 1 Monat",    loss: loss1m, delay: 0 },
-                  { label: "In 3 Monaten",  loss: loss3m, delay: 120 },
-                  { label: "In 6 Monaten",  loss: loss6m, delay: 240 },
-                ] as const).map(({ label, loss, delay }) => (
-                  <div key={label}>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium">{label}</span>
-                      <span className="text-sm font-bold tabular-nums">−{loss} kg</span>
+                <div className="space-y-5 mb-8">
+                  {([
+                    { label: "In 1 Monat",    loss: loss1m, delay: 0 },
+                    { label: "In 3 Monaten",  loss: loss3m, delay: 120 },
+                    { label: "In 6 Monaten",  loss: loss6m, delay: 240 },
+                  ] as const).map(({ label, loss, delay }) => (
+                    <div key={label}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium">{label}</span>
+                        <span className="text-sm font-bold tabular-nums">−{loss} kg</span>
+                      </div>
+                      <div className="h-2 bg-border/40 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-foreground rounded-full transition-all duration-700 ease-out"
+                          style={{
+                            width: showDetails ? `${(loss / loss6m) * 100}%` : "0%",
+                            transitionDelay: showDetails ? `${delay}ms` : "0ms",
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-2 bg-border/40 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-foreground rounded-full transition-all duration-700 ease-out"
-                        style={{
-                          width: showDetails ? `${(loss / loss6m) * 100}%` : "0%",
-                          transitionDelay: showDetails ? `${delay}ms` : "0ms",
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {w > 0 && (
-                <div className="bg-card rounded-2xl p-5 mb-6">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Zielgewicht nach 6 Monaten</p>
-                  <p className="text-4xl font-bold">{targetWeight} <span className="text-xl font-medium text-muted-foreground">kg</span></p>
-                  <p className="text-xs text-muted-foreground mt-1">ausgehend von {w} kg Körpergewicht</p>
+                  ))}
                 </div>
-              )}
 
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                * Durchschnittliche Ergebnisse basierend auf klinischen Studien. Individuelle Ergebnisse können abweichen.
-              </p>
-            </div>
+                {w > 0 && (
+                  <div className="bg-card rounded-2xl p-5 mb-6">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Zielgewicht nach 6 Monaten</p>
+                    <p className="text-4xl font-bold">{targetWeight} <span className="text-xl font-medium text-muted-foreground">kg</span></p>
+                    <p className="text-xs text-muted-foreground mt-1">ausgehend von {w} kg Körpergewicht</p>
+                  </div>
+                )}
+
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  * Durchschnittliche Ergebnisse basierend auf klinischen Studien. Individuelle Ergebnisse können abweichen.
+                </p>
+              </div>
+            )}
           </div>
         </main>
 
