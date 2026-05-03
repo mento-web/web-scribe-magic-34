@@ -233,6 +233,18 @@ const BmiInterstitial = ({
               </div>
             </div>
 
+            {/* Healthy BMI message */}
+            {!showProjections && showDetails && (
+              <div className="transition-all duration-500 ease-out" style={{ opacity: showDetails ? 1 : 0, transform: showDetails ? 'translateY(0)' : 'translateY(12px)' }}>
+                <div className="bg-card rounded-2xl p-6">
+                  <p className="text-base font-semibold mb-2">Ihr Gewicht ist bereits im gesunden Bereich.</p>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Leider sind Sie für unsere GLP-1 Behandlung nicht geeignet — diese ist für Personen mit einem BMI über 25 vorgesehen. Wir empfehlen Ihnen, Ihren Hausarzt für eine persönliche Beratung aufzusuchen.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Weight loss projections — only for BMI > 25 */}
             {showProjections && (
               <div
