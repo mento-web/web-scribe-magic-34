@@ -189,7 +189,7 @@ const Index = () => {
       {/* Trust Icons */}
       <section className="py-12 px-4">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 auto-rows-fr">
             {[
               { icon: Stethoscope, label: "Lizenzierte Schweizer Ärzte" },
               { icon: Shield, label: "100% Online & Sicher" },
