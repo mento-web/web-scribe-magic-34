@@ -123,6 +123,136 @@ const BMI_STYLES = `
   .check-pop { animation: checkPop .25s cubic-bezier(.34,1.56,.64,1) both; }
 `;
 
+function catmullRomPath(pts: { x: number; y: number }[]): string {
+  if (pts.length < 2) return '';
+  const d: string[] = [`M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(pts.length - 1, i + 2)];
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    d.push(`C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)} ${cp2x.toFixed(2)} ${cp2y.toFixed(2)} ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`);
+  }
+  return d.join(' ');
+}
+
+const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; visible: boolean }) => {
+  const T3M = 0.35, T6M = 0.60, T12M = 0.90;
+
+  const getFraction = (m: number) => {
+    if (m <= 0) return 0;
+    if (m <= 3) return (m / 3) * T3M;
+    if (m <= 6) return T3M + ((m - 3) / 3) * (T6M - T3M);
+    return T6M + ((m - 6) / 6) * (T12M - T6M);
+  };
+
+  const loss12m = Math.round(T12M * peakLoss * 10) / 10;
+
+  // SVG geometry
+  const VW = 400, VH = 156;
+  const padT = 12, padB = 20, padL = 4, padR = 44;
+  const cW = VW - padL - padR;
+  const cH = VH - padT - padB;
+  const totalMonths = 12;
+
+  const pts = Array.from({ length: totalMonths + 1 }, (_, m) => ({
+    x: padL + (m / totalMonths) * cW,
+    y: padT + (getFraction(m) / T12M) * cH,
+  }));
+
+  const linePath = catmullRomPath(pts);
+  const endPt = pts[totalMonths];
+  const fillPath = `${linePath} L ${endPt.x} ${VH - padB} L ${padL} ${VH - padB} Z`;
+
+  const targetDate = new Date();
+  targetDate.setMonth(targetDate.getMonth() + 12);
+  const dateLabel = targetDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+
+  return (
+    <div className="mb-8">
+      {/* Header stats */}
+      <div className="flex items-end justify-between mb-4">
+        <div>
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Ihr Gewicht</p>
+          <p className="text-4xl font-bold tracking-tight">{w} <span className="text-lg font-medium text-muted-foreground">kg</span></p>
+        </div>
+        <div className="text-right">
+          <p className="text-2xl font-bold text-emerald-500 tracking-tight">↓{loss12m} kg</p>
+          <p className="text-xs text-muted-foreground">nach 12 Monaten</p>
+        </div>
+      </div>
+
+      {/* Chart card */}
+      <div className="relative bg-card rounded-2xl overflow-hidden">
+        <svg viewBox={`0 0 ${VW} ${VH}`} width="100%" className="block" aria-hidden="true">
+          <defs>
+            <linearGradient id="wc-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stopColor="#22c55e" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="#22c55e" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+
+          {/* Vertical dashed line at 12 months */}
+          <line
+            x1={endPt.x} y1={padT - 4} x2={endPt.x} y2={VH - padB + 4}
+            stroke="#888" strokeWidth="1" strokeDasharray="3 3"
+            style={{ opacity: visible ? 0.35 : 0, transition: 'opacity 0.4s ease 1.1s' }}
+          />
+
+          {/* Gradient fill */}
+          <path
+            d={fillPath} fill="url(#wc-grad)"
+            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.7s ease 0.9s' }}
+          />
+
+          {/* Curve */}
+          <path
+            d={linePath} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"
+            pathLength="1"
+            style={{
+              strokeDasharray: 1,
+              strokeDashoffset: visible ? 0 : 1,
+              transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1)',
+            }}
+          />
+
+          {/* Endpoint glow + dot */}
+          <circle cx={endPt.x} cy={endPt.y} r="10" fill="#22c55e"
+            style={{ opacity: visible ? 0.15 : 0, transition: 'opacity 0.3s ease 1.35s' }}
+          />
+          <circle cx={endPt.x} cy={endPt.y} r="5" fill="#22c55e"
+            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.35s' }}
+          />
+          <circle cx={endPt.x} cy={endPt.y} r="2.5" fill="white"
+            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.35s' }}
+          />
+
+          {/* Target weight label on right axis */}
+          <text
+            x={endPt.x + 8} y={endPt.y + 4}
+            fontSize="11" fill="#888" fontWeight="500"
+            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.4s' }}
+          >
+            {Math.round(w - loss12m)} kg
+          </text>
+        </svg>
+
+        {/* Date pill */}
+        <div
+          className="absolute top-3 right-3 bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-medium shadow-sm"
+          style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.4s ease 1.45s' }}
+        >
+          {dateLabel}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function getBmiInfo(bmi: number) {
   if (bmi < 18.5) return { label: "Untergewicht",    badge: "bg-blue-500/10 text-blue-600" };
   if (bmi < 25)   return { label: "Normalgewicht",   badge: "bg-emerald-500/10 text-emerald-600" };
@@ -267,8 +397,11 @@ const BmiInterstitial = ({
               </div>
             )}
 
-            {/* Weight loss projections — only for BMI > 25 */}
+            {/* Weight chart + projections — only for BMI > 25 */}
             {showProjections && (
+              <>
+                <WeightChart w={w} peakLoss={peakLoss} visible={showDetails} />
+
               <div
                 className="transition-all duration-500 ease-out"
                 style={{ opacity: showDetails ? 1 : 0, transform: showDetails ? 'translateY(0)' : 'translateY(12px)' }}
@@ -313,6 +446,7 @@ const BmiInterstitial = ({
                   * Projektionen basierend auf STEP 1 (Semaglutid 2.4 mg, 68 Wochen) und der Johns Hopkins Metaanalyse 2026 (64 Studien). Geschlechtsspezifische Anpassung: Frauen −10.9 %, Männer −6.8 %. Individuelle Ergebnisse können abweichen.
                 </p>
               </div>
+              </>
             )}
           </div>
         </main>
