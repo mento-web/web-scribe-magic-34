@@ -1,9 +1,80 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Star, Shield, Stethoscope, Truck, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import heroProduct from "@/assets/hero-product.jpg";
 import heroMan from "@/assets/hero-man.jpg";
 import heroWoman from "@/assets/hero-woman.jpg";
+
+const BmiWidget = () => {
+  const navigate = useNavigate();
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
+  const [gender, setGender] = useState<"women" | "men">("women");
+
+  const canSubmit = Number(height) > 0 && Number(weight) > 0;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    navigate(`/analyse?height=${height}&weight=${weight}&gender=${gender}`);
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Gender toggle */}
+      <div className="flex gap-2">
+        {(["women", "men"] as const).map((g) => (
+          <button
+            key={g}
+            type="button"
+            onClick={() => setGender(g)}
+            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+              gender === g ? "bg-foreground text-background" : "bg-card text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {g === "women" ? "Frau" : "Mann"}
+          </button>
+        ))}
+      </div>
+
+      {/* Inputs */}
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { label: "Grösse", value: height, set: setHeight, placeholder: "175", suffix: "cm" },
+          { label: "Gewicht", value: weight, set: setWeight, placeholder: "90", suffix: "kg" },
+        ].map((field) => (
+          <div key={field.label} className="bg-background rounded-2xl p-4">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">
+              {field.label}
+            </label>
+            <div className="flex items-end gap-1.5">
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder={field.placeholder}
+                value={field.value}
+                onChange={(e) => field.set(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                className="h-11 text-2xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="text-sm font-medium text-muted-foreground pb-1.5 shrink-0">{field.suffix}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Button
+        onClick={handleSubmit}
+        disabled={!canSubmit}
+        size="lg"
+        className="w-full rounded-full font-semibold gap-2 disabled:opacity-30"
+      >
+        Jetzt prüfen <ArrowRight className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 const Index = () => {
   return (
@@ -138,20 +209,18 @@ const Index = () => {
 
       {/* BMI Rechner */}
       <section id="bmi-rechner" className="py-20 px-4 scroll-mt-24">
-        <div className="container mx-auto max-w-4xl rounded-3xl bg-card p-8 md:p-12">
-          <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">BMI Rechner</p>
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Schnell prüfen, ob Ihr BMI im relevanten Bereich liegt
-          </h2>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl">
-            Nutzen Sie unseren BMI Rechner als ersten Richtwert. Für eine medizinische Einschätzung und geeignete Therapieoptionen starten Sie anschliessend den Fragebogen.
-          </p>
-          <div className="mt-8">
-            <Link to="/survey/women">
-              <Button className="rounded-full px-6 text-sm font-medium">
-                Zum Fragebogen
-              </Button>
-            </Link>
+        <div className="container mx-auto max-w-4xl">
+          <div className="grid md:grid-cols-2 gap-8 items-center rounded-3xl bg-card p-8 md:p-12">
+            <div>
+              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">BMI Rechner</p>
+              <h2 className="text-3xl md:text-4xl font-bold leading-[1.1] mb-4">
+                Prüfen Sie, ob Sie für unsere Behandlung geeignet sind
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Geben Sie Ihre Daten ein und sehen Sie sofort Ihren BMI sowie Ihre persönliche Gewichtsprognose mit GLP-1.
+              </p>
+            </div>
+            <BmiWidget />
           </div>
         </div>
       </section>
