@@ -317,17 +317,19 @@ const BmiInterstitial = ({
           </div>
         </main>
 
-        <div className="sticky bottom-0 px-5 pb-8 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
-          <div className="container mx-auto max-w-xl">
-            <Button
-              onClick={onContinue}
-              size="lg"
-              className="w-full h-13 rounded-full text-base font-semibold gap-2"
-            >
-              Weiter zum Fragebogen <ArrowRight className="h-4 w-4" />
-            </Button>
+        {showProjections && (
+          <div className="sticky bottom-0 px-5 pb-8 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+            <div className="container mx-auto max-w-xl">
+              <Button
+                onClick={onContinue}
+                size="lg"
+                className="w-full h-13 rounded-full text-base font-semibold gap-2"
+              >
+                Weiter zum Fragebogen <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );
