@@ -8,7 +8,7 @@ interface Question {
   id: string;
   title: string;
   subtitle?: string;
-  type: "radio" | "number-pair" | "number" | "checkbox";
+  type: "radio" | "number-pair" | "checkbox";
   options?: { value: string; label: string }[];
   fields?: { id: string; label: string; placeholder: string; suffix?: string }[];
 }
@@ -28,20 +28,14 @@ const sharedQuestions: Question[] = [
   },
   {
     id: "bmi",
-    title: "Grösse und Gewicht",
+    title: "Grösse, Gewicht & Alter",
     subtitle: "Diese Angaben helfen uns, Ihren BMI zu berechnen.",
     type: "number-pair",
     fields: [
       { id: "height", label: "Grösse", placeholder: "175", suffix: "cm" },
       { id: "weight", label: "Gewicht", placeholder: "90", suffix: "kg" },
+      { id: "age", label: "Alter", placeholder: "35", suffix: "Jahre" },
     ],
-  },
-  {
-    id: "age",
-    title: "Wie alt sind Sie?",
-    subtitle: "Bitte geben Sie Ihr genaues Alter ein.",
-    type: "number",
-    fields: [{ id: "age", label: "Alter", placeholder: "35", suffix: "Jahre" }],
   },
   {
     id: "tried",
@@ -516,7 +510,7 @@ const Survey = () => {
 
   const canProceed = useMemo(() => {
     const ans = answers[current.id];
-    if (current.type === "number-pair" || current.type === "number") {
+    if (current.type === "number-pair") {
       const obj = ans as Record<string, string> | undefined;
       return !!(obj && current.fields!.every((f) => obj[f.id] && Number(obj[f.id]) > 0));
     }
@@ -533,14 +527,14 @@ const Survey = () => {
   };
 
   const advance = () => {
-    if (current.id === "age") { setShowBmiCard(true); return; }
+    if (current.id === "bmi") { setShowBmiCard(true); return; }
     doAdvance();
   };
 
   const handleRadio = (value: string) => {
     setAnswers((prev) => ({ ...prev, [current.id]: value }));
     setTimeout(() => {
-      if (current.id === "age") { setShowBmiCard(true); return; }
+      if (current.id === "bmi") { setShowBmiCard(true); return; }
       doAdvance();
     }, 380);
   };
@@ -753,10 +747,28 @@ const Survey = () => {
                 </div>
               )}
 
-              {/* Number pair (height + weight) */}
+              {/* Number pair (height + weight, then age full-width) */}
               {current.type === "number-pair" && (
-                <div className="grid grid-cols-2 gap-3">
-                  {current.fields!.map((field) => (
+                <div className="flex flex-col gap-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    {current.fields!.slice(0, 2).map((field) => (
+                      <div key={field.id} className="bg-card rounded-2xl p-4">
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">{field.label}</label>
+                        <div className="flex items-end gap-1.5">
+                          <Input
+                            type="number"
+                            inputMode="numeric"
+                            placeholder={field.placeholder}
+                            value={(answers[current.id] as Record<string, string>)?.[field.id] || ""}
+                            onChange={(e) => handleNumberField(field.id, e.target.value)}
+                            className="h-12 text-2xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          />
+                          {field.suffix && <span className="text-sm font-medium text-muted-foreground pb-2 shrink-0">{field.suffix}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {current.fields!.slice(2).map((field) => (
                     <div key={field.id} className="bg-card rounded-2xl p-4">
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">{field.label}</label>
                       <div className="flex items-end gap-1.5">
@@ -772,28 +784,6 @@ const Survey = () => {
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
-
-              {/* Single number (age) */}
-              {current.type === "number" && (
-                <div className="bg-card rounded-2xl p-6">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-4">
-                    {current.fields![0].label}
-                  </label>
-                  <div className="flex items-end gap-2">
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      placeholder={current.fields![0].placeholder}
-                      value={(answers[current.id] as Record<string, string>)?.[current.fields![0].id] || ""}
-                      onChange={(e) => handleNumberField(current.fields![0].id, e.target.value)}
-                      className="h-16 text-5xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    />
-                    {current.fields![0].suffix && (
-                      <span className="text-xl font-medium text-muted-foreground pb-4 shrink-0">{current.fields![0].suffix}</span>
-                    )}
-                  </div>
                 </div>
               )}
 
@@ -833,7 +823,7 @@ const Survey = () => {
                 size="lg"
                 className="w-full h-16 rounded-2xl text-base font-semibold gap-2 disabled:opacity-20"
               >
-                {current.id === "age" ? "Analyse anzeigen" : step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
+                {current.id === "bmi" ? "Analyse anzeigen" : step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </div>
