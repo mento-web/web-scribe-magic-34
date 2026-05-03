@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -77,36 +77,6 @@ const sharedQuestions: Question[] = [
   },
 ];
 
-const menQuestions: Question[] = [
-  ...sharedQuestions.slice(0, 3),
-  {
-    id: "men-specific",
-    title: "Beeinträchtigt Ihr Gewicht Ihre Leistungsfähigkeit?",
-    type: "radio",
-    options: [
-      { value: "yes-significantly", label: "Ja, stark" },
-      { value: "yes-somewhat", label: "Ja, etwas" },
-      { value: "no", label: "Nein" },
-    ],
-  },
-  ...sharedQuestions.slice(3),
-];
-
-const womenQuestions: Question[] = [
-  ...sharedQuestions.slice(0, 3),
-  {
-    id: "women-specific",
-    title: "Sind Sie schwanger oder planen Sie eine Schwangerschaft?",
-    subtitle: "GLP-1 Medikamente sind während der Schwangerschaft nicht geeignet.",
-    type: "radio",
-    options: [
-      { value: "pregnant", label: "Ja, ich bin schwanger" },
-      { value: "planning", label: "Ja, ich plane eine Schwangerschaft" },
-      { value: "no", label: "Nein" },
-    ],
-  },
-  ...sharedQuestions.slice(3),
-];
 
 type Answers = Record<string, string | string[] | Record<string, string>>;
 
@@ -533,7 +503,7 @@ const BmiInterstitial = ({
 
 const Survey = () => {
   const { gender } = useParams<{ gender: string }>();
-  const questions = gender === "men" ? menQuestions : womenQuestions;
+  const questions = sharedQuestions;
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
@@ -604,8 +574,6 @@ const Survey = () => {
 
   const getResult = () => {
     const bmiData = answers["bmi"] as Record<string, string> | undefined;
-    const pregnancyAnswer = answers["women-specific"];
-    if (pregnancyAnswer === "pregnant" || pregnancyAnswer === "planning") return "not-eligible";
     if (bmiData) {
       const h = Number(bmiData.height) / 100;
       const w = Number(bmiData.weight);
@@ -659,13 +627,6 @@ const Survey = () => {
         badge: "Nicht empfohlen", badgeBg: "bg-muted text-muted-foreground",
         title: "Aktuell nicht empfohlen.",
         body: "Ihr BMI liegt im Normalbereich. Eine GLP-1 Therapie wird in der Regel erst ab einem BMI von 27+ empfohlen. Sprechen Sie mit Ihrem Hausarzt über Ihre Möglichkeiten.",
-      },
-      "not-eligible": {
-        icon: <X className="h-8 w-8" strokeWidth={1.5} />,
-        iconBg: "bg-destructive/10", iconColor: "text-destructive",
-        badge: "Nicht geeignet", badgeBg: "bg-destructive/10 text-destructive",
-        title: "Nicht geeignet.",
-        body: "GLP-1 Medikamente sind während der Schwangerschaft oder bei Schwangerschaftsplanung nicht geeignet. Bitte konsultieren Sie Ihren Arzt für alternative Möglichkeiten.",
       },
     }[result];
 
