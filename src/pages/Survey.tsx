@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -142,6 +142,7 @@ function catmullRomPath(pts: { x: number; y: number }[]): string {
 
 const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; visible: boolean }) => {
   const T3M = 0.35, T6M = 0.60, T12M = 0.90;
+  const totalMonths = 12;
 
   const getFraction = (m: number) => {
     if (m <= 0) return 0;
@@ -150,45 +151,114 @@ const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; vi
     return T6M + ((m - 6) / 6) * (T12M - T6M);
   };
 
-  const loss12m = Math.round(T12M * peakLoss * 10) / 10;
-
   // SVG geometry
   const VW = 400, VH = 156;
-  const padT = 12, padB = 20, padL = 4, padR = 44;
+  const padT = 20, padB = 16, padL = 4, padR = 48;
   const cW = VW - padL - padR;
   const cH = VH - padT - padB;
-  const totalMonths = 12;
 
+  // Scrubber state — starts at 12 months
+  const [scrubMonth, setScrubMonth] = useState(totalMonths);
+  const dragging = useRef(false);
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  const monthFromClientX = (clientX: number) => {
+    if (!svgRef.current) return scrubMonth;
+    const rect = svgRef.current.getBoundingClientRect();
+    const svgX = ((clientX - rect.left) / rect.width) * VW;
+    return Math.max(0, Math.min(totalMonths, ((svgX - padL) / cW) * totalMonths));
+  };
+
+  // Global mouse-up so drag works even outside SVG
+  useEffect(() => {
+    const up = () => { dragging.current = false; };
+    window.addEventListener('mouseup', up);
+    return () => window.removeEventListener('mouseup', up);
+  }, []);
+
+  // Derived values at current scrub position
+  const scrubFrac   = getFraction(scrubMonth);
+  const scrubX      = padL + (scrubMonth / totalMonths) * cW;
+  const scrubY      = padT + (scrubFrac / T12M) * cH;
+  const scrubWeight = Math.max(0, Math.round((w - scrubFrac * peakLoss) * 10) / 10);
+  const lossNow     = Math.round((w - scrubWeight) * 10) / 10;
+  const roundedM    = Math.round(scrubMonth);
+
+  const scrubDate = new Date();
+  scrubDate.setMonth(scrubDate.getMonth() + roundedM);
+  const datePill = scrubDate.toLocaleDateString('de-CH', { month: 'short', year: 'numeric' });
+
+  // Curve path
   const pts = Array.from({ length: totalMonths + 1 }, (_, m) => ({
     x: padL + (m / totalMonths) * cW,
     y: padT + (getFraction(m) / T12M) * cH,
   }));
-
   const linePath = catmullRomPath(pts);
-  const endPt = pts[totalMonths];
-  const fillPath = `${linePath} L ${endPt.x} ${VH - padB} L ${padL} ${VH - padB} Z`;
+  const fillPath = `${linePath} L ${pts[totalMonths].x} ${VH - padB} L ${padL} ${VH - padB} Z`;
 
-  const targetDate = new Date();
-  targetDate.setMonth(targetDate.getMonth() + 12);
-  const dateLabel = targetDate.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
+  // Date pill left offset as % of chart rendered width (accounts for padR)
+  const pillLeftPct = ((scrubX - padL) / cW) * ((cW / VW) * 100);
 
   return (
-    <div className="mb-8">
-      {/* Header stats */}
-      <div className="flex items-end justify-between mb-4">
+    <div className="mb-8 select-none">
+      {/* Header */}
+      <div className="flex items-end justify-between mb-3">
         <div>
           <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Ihr Gewicht</p>
-          <p className="text-4xl font-bold tracking-tight">{w} <span className="text-lg font-medium text-muted-foreground">kg</span></p>
+          <p className="text-4xl font-bold tracking-tight">
+            {w} <span className="text-lg font-medium text-muted-foreground">kg</span>
+          </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-emerald-500 tracking-tight">↓{loss12m} kg</p>
-          <p className="text-xs text-muted-foreground">nach 12 Monaten</p>
+          <p className="text-2xl font-bold text-emerald-500 tracking-tight tabular-nums">
+            {lossNow > 0 ? `↓${lossNow} kg` : '–'}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {roundedM === 0 ? 'jetzt' : `nach ${roundedM} Monat${roundedM === 1 ? '' : 'en'}`}
+          </p>
         </div>
       </div>
 
-      {/* Chart card */}
+      {/* Chart */}
       <div className="relative bg-card rounded-2xl overflow-hidden">
-        <svg viewBox={`0 0 ${VW} ${VH}`} width="100%" className="block" aria-hidden="true">
+        {/* Date pill — HTML overlay so it respects theme */}
+        {visible && (
+          <div
+            className="absolute z-10 top-2 pointer-events-none"
+            style={{ left: `${Math.min(Math.max(pillLeftPct, 4), 72)}%`, transform: 'translateX(-50%)' }}
+          >
+            <div className="bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-semibold shadow-sm whitespace-nowrap">
+              {datePill}
+            </div>
+          </div>
+        )}
+
+        <svg
+          ref={svgRef}
+          viewBox={`0 0 ${VW} ${VH}`}
+          width="100%"
+          className="block"
+          style={{ cursor: dragging.current ? 'grabbing' : 'ew-resize', touchAction: 'none' }}
+          onMouseDown={(e) => {
+            dragging.current = true;
+            setScrubMonth(monthFromClientX(e.clientX));
+          }}
+          onMouseMove={(e) => {
+            if (!dragging.current) return;
+            setScrubMonth(monthFromClientX(e.clientX));
+          }}
+          onMouseUp={() => { dragging.current = false; }}
+          onTouchStart={(e) => {
+            dragging.current = true;
+            setScrubMonth(monthFromClientX(e.touches[0].clientX));
+          }}
+          onTouchMove={(e) => {
+            e.preventDefault();
+            setScrubMonth(monthFromClientX(e.touches[0].clientX));
+          }}
+          onTouchEnd={() => { dragging.current = false; }}
+          aria-hidden="true"
+        >
           <defs>
             <linearGradient id="wc-grad" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%"   stopColor="#22c55e" stopOpacity="0.22" />
@@ -196,22 +266,13 @@ const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; vi
             </linearGradient>
           </defs>
 
-          {/* Vertical dashed line at 12 months */}
-          <line
-            x1={endPt.x} y1={padT - 4} x2={endPt.x} y2={VH - padB + 4}
-            stroke="#888" strokeWidth="1" strokeDasharray="3 3"
-            style={{ opacity: visible ? 0.35 : 0, transition: 'opacity 0.4s ease 1.1s' }}
-          />
-
-          {/* Gradient fill */}
-          <path
-            d={fillPath} fill="url(#wc-grad)"
+          {/* Fill */}
+          <path d={fillPath} fill="url(#wc-grad)"
             style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.7s ease 0.9s' }}
           />
 
           {/* Curve */}
-          <path
-            d={linePath} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"
+          <path d={linePath} fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round"
             pathLength="1"
             style={{
               strokeDasharray: 1,
@@ -220,34 +281,33 @@ const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; vi
             }}
           />
 
-          {/* Endpoint glow + dot */}
-          <circle cx={endPt.x} cy={endPt.y} r="10" fill="#22c55e"
-            style={{ opacity: visible ? 0.15 : 0, transition: 'opacity 0.3s ease 1.35s' }}
-          />
-          <circle cx={endPt.x} cy={endPt.y} r="5" fill="#22c55e"
-            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.35s' }}
-          />
-          <circle cx={endPt.x} cy={endPt.y} r="2.5" fill="white"
-            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.35s' }}
+          {/* Scrubber line */}
+          <line
+            x1={scrubX} y1={padT - 8} x2={scrubX} y2={VH - padB + 2}
+            stroke="#888" strokeWidth="1" strokeDasharray="3 3"
+            style={{ opacity: visible ? 0.45 : 0, transition: visible ? 'opacity 0.4s ease 1.1s' : 'none' }}
           />
 
-          {/* Target weight label on right axis */}
-          <text
-            x={endPt.x + 8} y={endPt.y + 4}
-            fontSize="11" fill="#888" fontWeight="500"
-            style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.3s ease 1.4s' }}
-          >
-            {Math.round(w - loss12m)} kg
-          </text>
+          {/* Glow */}
+          <circle cx={scrubX} cy={scrubY} r="11" fill="#22c55e"
+            style={{ opacity: visible ? 0.15 : 0, transition: visible ? 'opacity 0.3s ease 1.35s' : 'none' }}
+          />
+          {/* Dot */}
+          <circle cx={scrubX} cy={scrubY} r="6" fill="#22c55e"
+            style={{ opacity: visible ? 1 : 0, transition: visible ? 'opacity 0.3s ease 1.35s' : 'none' }}
+          />
+          <circle cx={scrubX} cy={scrubY} r="2.8" fill="white"
+            style={{ opacity: visible ? 1 : 0, transition: visible ? 'opacity 0.3s ease 1.35s' : 'none' }}
+          />
+
+          {/* Right-axis weight label */}
+          <text x={VW - padR + 7} y={scrubY + 4} fontSize="11" fontWeight="600" fill="#888"
+            style={{ opacity: visible ? 1 : 0, transition: 'none' }}
+          >{scrubWeight}</text>
+          <text x={VW - padR + 7} y={scrubY + 15} fontSize="9" fill="#aaa"
+            style={{ opacity: visible ? 1 : 0, transition: 'none' }}
+          >kg</text>
         </svg>
-
-        {/* Date pill */}
-        <div
-          className="absolute top-3 right-3 bg-background border border-border rounded-lg px-2.5 py-1 text-xs font-medium shadow-sm"
-          style={{ opacity: visible ? 1 : 0, transition: 'opacity 0.4s ease 1.45s' }}
-        >
-          {dateLabel}
-        </div>
       </div>
     </div>
   );
