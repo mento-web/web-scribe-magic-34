@@ -9,7 +9,7 @@ interface Question {
   title: string;
   subtitle?: string;
   type: "radio" | "number-pair" | "checkbox";
-  options?: { value: string; label: string; emoji?: string }[];
+  options?: { value: string; label: string }[];
   fields?: { id: string; label: string; placeholder: string; suffix?: string }[];
 }
 
@@ -20,10 +20,10 @@ const sharedQuestions: Question[] = [
     subtitle: "Wählen Sie das Ziel, das am besten zu Ihnen passt.",
     type: "radio",
     options: [
-      { value: "lose-weight", label: "Gewicht verlieren", emoji: "⚡" },
-      { value: "maintain", label: "Gewicht halten", emoji: "⚖️" },
-      { value: "health", label: "Gesundheit verbessern", emoji: "💚" },
-      { value: "energy", label: "Mehr Energie im Alltag", emoji: "🔋" },
+      { value: "lose-weight", label: "Gewicht verlieren" },
+      { value: "maintain", label: "Gewicht halten" },
+      { value: "health", label: "Gesundheit verbessern" },
+      { value: "energy", label: "Mehr Energie im Alltag" },
     ],
   },
   {
@@ -375,10 +375,7 @@ const Survey = () => {
             {/* Question */}
             <div key={animKey} className="question-enter">
               <div className="mb-8">
-                <span className="text-xs font-semibold text-muted-foreground/50 tabular-nums tracking-widest">
-                  {String(step + 1).padStart(2, "0")} / {String(questions.length).padStart(2, "0")}
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mt-2 mb-2">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mb-2">
                   {current.title}
                 </h2>
                 {current.subtitle && (
@@ -402,9 +399,6 @@ const Survey = () => {
                             : "bg-card hover:bg-card/80 hover:scale-[1.005] active:scale-[0.998]"
                         }`}
                       >
-                        {opt.emoji && (
-                          <span className="text-xl w-7 text-center shrink-0">{opt.emoji}</span>
-                        )}
                         <span className="flex-1 font-medium text-base">{opt.label}</span>
                         <span
                           className={`shrink-0 h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
