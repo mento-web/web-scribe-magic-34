@@ -214,10 +214,10 @@ const Index = () => {
             <div>
               <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">BMI Rechner</p>
               <h2 className="text-3xl md:text-4xl font-bold leading-[1.1] mb-4">
-                Prüfen Sie, ob Sie für unsere Behandlung geeignet sind
+                Berechne dein Abnehm-Potenzial
               </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Geben Sie Ihre Daten ein und sehen Sie sofort Ihren BMI sowie Ihre persönliche Gewichtsprognose mit GLP-1.
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                {"\n"}
               </p>
             </div>
             <BmiWidget />
