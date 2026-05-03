@@ -48,7 +48,7 @@ const FAQ = () => {
     },
     {
       question: "Wie erreiche ich den Kundensupport?",
-      answer: "Unser Support-Team ist per E-Mail unter support@swissvita.ch erreichbar. Für medizinische Fragen kontaktieren Sie bitte direkt Ihren behandelnden Arzt über das Patientenportal."
+      answer: "Unser Support-Team ist per E-Mail unter support@helvi.ch erreichbar. Für medizinische Fragen kontaktieren Sie bitte direkt Ihren behandelnden Arzt über das Patientenportal."
     }
   ];
 
@@ -58,7 +58,7 @@ const FAQ = () => {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b">
         <div className="container mx-auto flex items-center justify-between h-16 px-4">
           <Link to="/" className="text-2xl font-bold tracking-tight text-foreground">
-            swissvita
+            helvi
           </Link>
           <Link to="/">
             <Button variant="ghost" className="gap-2">
@@ -129,13 +129,13 @@ const FAQ = () => {
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start gap-8">
             <div>
-              <p className="text-xl font-bold">swissvita</p>
+              <p className="text-xl font-bold">helvi</p>
               <p className="text-sm text-muted-foreground mt-2 max-w-xs">
                 Ärztlich begleitete Gewichtstherapie in der Schweiz.
               </p>
             </div>
             <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
-              <p>© {new Date().getFullYear()} SwissVita. Alle Rechte vorbehalten.</p>
+              <p>© {new Date().getFullYear()} Helvi. Alle Rechte vorbehalten.</p>
               <p className="text-xs">
                 Dies ist kein Ersatz für eine ärztliche Beratung. Alle Behandlungen erfolgen unter ärztlicher Aufsicht gemäss Schweizer Heilmittelgesetz (HMG).
               </p>
