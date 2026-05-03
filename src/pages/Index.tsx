@@ -18,6 +18,9 @@ const Index = () => {
             <a href="#bmi-rechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               BMI Rechner
             </a>
+            <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Preise
+            </Link>
             <Link to="/survey/women">
               <Button className="rounded-full px-6 text-sm font-medium">
                 Jetzt starten
@@ -255,6 +258,15 @@ const Index = () => {
               <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
                 FAQ
               </Link>
+<<<<<<< HEAD
+=======
+              <Link to="/proteinrechner" className="text-muted-foreground hover:text-foreground transition-colors">
+                Proteinrechner
+              </Link>
+              <Link to="/blogs" className="text-muted-foreground hover:text-foreground transition-colors">
+                Blog
+              </Link>
+>>>>>>> 22dd4d6 (Add Pricing page at /pricing with three CHF plans)
             </div>
             <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
               <p>© {new Date().getFullYear()} Helvi. Alle Rechte vorbehalten.</p>
