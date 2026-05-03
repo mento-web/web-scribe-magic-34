@@ -133,10 +133,12 @@ function getBmiInfo(bmi: number) {
 
 const BmiInterstitial = ({
   answers,
+  gender,
   onContinue,
   onBack,
 }: {
   answers: Answers;
+  gender: string;
   onContinue: () => void;
   onBack: () => void;
 }) => {
@@ -147,12 +149,32 @@ const BmiInterstitial = ({
   const bmiTarget = Math.round(bmi * 10) / 10;
 
   const showProjections = bmi > 25;
+
+  // ── Algorithm based on clinical trial data ────────────────────────────────
+  // Baseline: STEP 1 trial — Semaglutide 2.4 mg, non-diabetic, 68 weeks → −14.9%
+  const BASE_PEAK = 0.149;
+
+  // Sex multiplier: Johns Hopkins meta-analysis (64 trials, 2026)
+  // Women −10.9 %, Men −6.8 %, average −8.85 %
+  const META_AVG = (10.9 + 6.8) / 2;
+  const sexMultiplier = gender === "women" ? 10.9 / META_AVG : 6.8 / META_AVG;
+
+  const peakLossRate = BASE_PEAK * sexMultiplier;
+
+  // Timeline fractions of 68-week peak (titration starts at ~16–20 wk)
+  const T3M  = 0.35;  // 3 months  ≈ 35 % of peak
+  const T6M  = 0.60;  // 6 months  ≈ 60 % of peak
+  const T12M = 0.90;  // 12 months ≈ 90 % of peak
+
+  // BMI 23 floor: never project below BMI 23
   const minWeight = 23 * h * h;
-  const maxLoss = Math.max(0, w - minWeight);
-  const loss1m = Math.min(Math.max(1, Math.round(w * 0.025)), maxLoss);
-  const loss3m = Math.min(Math.max(2, Math.round(w * 0.05)), maxLoss);
-  const loss6m = Math.min(Math.max(3, Math.round(w * 0.09)), maxLoss);
-  const targetWeight = w > 0 ? Math.round((w - loss6m) * 10) / 10 : 0;
+  const maxLoss   = Math.max(0, w - minWeight);
+  const peakLoss  = Math.min(w * peakLossRate, maxLoss);
+
+  const loss3m  = Math.round(T3M  * peakLoss * 10) / 10;
+  const loss6m  = Math.round(T6M  * peakLoss * 10) / 10;
+  const loss12m = Math.round(T12M * peakLoss * 10) / 10;
+  const targetWeight = w > 0 ? Math.round((w - loss12m) * 10) / 10 : 0;
 
   const [displayBmi, setDisplayBmi] = useState(0);
   const [showDetails, setShowDetails] = useState(false);
@@ -257,9 +279,9 @@ const BmiInterstitial = ({
 
                 <div className="space-y-5 mb-8">
                   {([
-                    { label: "In 1 Monat",    loss: loss1m, delay: 0 },
-                    { label: "In 3 Monaten",  loss: loss3m, delay: 120 },
-                    { label: "In 6 Monaten",  loss: loss6m, delay: 240 },
+                    { label: "In 3 Monaten",  loss: loss3m,  delay: 0 },
+                    { label: "In 6 Monaten",  loss: loss6m,  delay: 120 },
+                    { label: "In 12 Monaten", loss: loss12m, delay: 240 },
                   ] as const).map(({ label, loss, delay }) => (
                     <div key={label}>
                       <div className="flex items-center justify-between mb-2">
@@ -270,7 +292,7 @@ const BmiInterstitial = ({
                         <div
                           className="h-full bg-foreground rounded-full transition-all duration-700 ease-out"
                           style={{
-                            width: showDetails ? `${(loss / loss6m) * 100}%` : "0%",
+                            width: showDetails ? `${(loss / loss12m) * 100}%` : "0%",
                             transitionDelay: showDetails ? `${delay}ms` : "0ms",
                           }}
                         />
@@ -281,14 +303,14 @@ const BmiInterstitial = ({
 
                 {w > 0 && (
                   <div className="bg-card rounded-2xl p-5 mb-6">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Zielgewicht nach 6 Monaten</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Zielgewicht nach 12 Monaten</p>
                     <p className="text-4xl font-bold">{targetWeight} <span className="text-xl font-medium text-muted-foreground">kg</span></p>
                     <p className="text-xs text-muted-foreground mt-1">ausgehend von {w} kg Körpergewicht</p>
                   </div>
                 )}
 
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  * Durchschnittliche Ergebnisse basierend auf klinischen Studien. Individuelle Ergebnisse können abweichen.
+                  * Projektionen basierend auf STEP 1 (Semaglutid 2.4 mg, 68 Wochen) und der Johns Hopkins Metaanalyse 2026 (64 Studien). Geschlechtsspezifische Anpassung: Frauen −10.9 %, Männer −6.8 %. Individuelle Ergebnisse können abweichen.
                 </p>
               </div>
             )}
@@ -410,6 +432,7 @@ const Survey = () => {
     return (
       <BmiInterstitial
         answers={answers}
+        gender={gender ?? "women"}
         onContinue={() => { setShowBmiCard(false); doAdvance(); }}
         onBack={() => setShowBmiCard(false)}
       />
