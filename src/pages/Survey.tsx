@@ -519,7 +519,7 @@ const BmiInterstitial = ({
                 size="lg"
                 className="w-full h-13 rounded-full text-base font-semibold gap-2"
               >
-                Weiter zum Fragebogen <ArrowRight className="h-4 w-4" />
+                Zu Ihren Optionen <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
