@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -9,7 +9,7 @@ interface Question {
   title: string;
   subtitle?: string;
   type: "radio" | "number-pair" | "checkbox";
-  options?: { value: string; label: string }[];
+  options?: { value: string; label: string; emoji?: string }[];
   fields?: { id: string; label: string; placeholder: string; suffix?: string }[];
 }
 
@@ -20,10 +20,10 @@ const sharedQuestions: Question[] = [
     subtitle: "Wählen Sie das Ziel, das am besten zu Ihnen passt.",
     type: "radio",
     options: [
-      { value: "lose-weight", label: "Gewicht verlieren" },
-      { value: "maintain", label: "Gewicht halten" },
-      { value: "health", label: "Gesundheit verbessern" },
-      { value: "energy", label: "Mehr Energie im Alltag" },
+      { value: "lose-weight", label: "Gewicht verlieren", emoji: "⚡" },
+      { value: "maintain", label: "Gewicht halten", emoji: "⚖️" },
+      { value: "health", label: "Gesundheit verbessern", emoji: "💚" },
+      { value: "energy", label: "Mehr Energie im Alltag", emoji: "🔋" },
     ],
   },
   {
@@ -117,13 +117,13 @@ type Answers = Record<string, string | string[] | Record<string, string>>;
 const Survey = () => {
   const { gender } = useParams<{ gender: string }>();
   const questions = gender === "men" ? menQuestions : womenQuestions;
-  const genderLabel = gender === "men" ? "Männer" : "Frauen";
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [showResult, setShowResult] = useState(false);
+  const [animKey, setAnimKey] = useState(0);
 
-  const progress = ((step + 1) / questions.length) * 100;
+  const progress = (step / questions.length) * 100;
   const current = questions[step];
 
   const canProceed = useMemo(() => {
@@ -132,14 +132,21 @@ const Survey = () => {
       const obj = ans as Record<string, string> | undefined;
       return obj && current.fields!.every((f) => obj[f.id] && Number(obj[f.id]) > 0);
     }
-    if (current.type === "checkbox") {
-      return Array.isArray(ans) && ans.length > 0;
-    }
+    if (current.type === "checkbox") return Array.isArray(ans) && ans.length > 0;
     return !!ans;
-  }, [answers, current, step]);
+  }, [answers, current]);
+
+  const advance = () => {
+    setAnimKey((k) => k + 1);
+    setTimeout(() => {
+      if (step < questions.length - 1) setStep((s) => s + 1);
+      else setShowResult(true);
+    }, 180);
+  };
 
   const handleRadio = (value: string) => {
     setAnswers((prev) => ({ ...prev, [current.id]: value }));
+    setTimeout(advance, 380);
   };
 
   const handleNumberField = (fieldId: string, value: string) => {
@@ -161,23 +168,17 @@ const Survey = () => {
     });
   };
 
-  const next = () => {
-    if (step < questions.length - 1) setStep((s) => s + 1);
-    else setShowResult(true);
-  };
-
   const prevStep = () => {
-    if (step > 0) setStep((s) => s - 1);
+    if (step > 0) {
+      setAnimKey((k) => k + 1);
+      setTimeout(() => setStep((s) => s - 1), 180);
+    }
   };
 
   const getResult = () => {
     const bmiData = answers["bmi"] as Record<string, string> | undefined;
     const pregnancyAnswer = answers["women-specific"];
-
-    if (pregnancyAnswer === "pregnant" || pregnancyAnswer === "planning") {
-      return "not-eligible";
-    }
-
+    if (pregnancyAnswer === "pregnant" || pregnancyAnswer === "planning") return "not-eligible";
     if (bmiData) {
       const h = Number(bmiData.height) / 100;
       const w = Number(bmiData.weight);
@@ -193,204 +194,320 @@ const Survey = () => {
 
   if (showResult) {
     const result = getResult();
+    const resultConfig = {
+      eligible: {
+        icon: <CheckCircle className="h-8 w-8" strokeWidth={1.5} />,
+        bg: "bg-emerald-500/10",
+        iconColor: "text-emerald-500",
+        badge: "Geeignet",
+        badgeBg: "bg-emerald-500/10 text-emerald-600",
+        title: "Sie könnten geeignet sein.",
+        body: "Basierend auf Ihren Angaben könnten Sie für eine ärztlich begleitete GLP-1 Therapie in Frage kommen. Ein Schweizer Arzt prüft Ihre Angaben und meldet sich bei Ihnen.",
+      },
+      borderline: {
+        icon: <AlertTriangle className="h-8 w-8" strokeWidth={1.5} />,
+        bg: "bg-amber-500/10",
+        iconColor: "text-amber-500",
+        badge: "Beratung empfohlen",
+        badgeBg: "bg-amber-500/10 text-amber-600",
+        title: "Ärztliche Beratung empfohlen.",
+        body: "Basierend auf Ihren Angaben empfehlen wir ein persönliches Gespräch mit einem unserer Ärzte, um die beste Behandlung für Sie zu bestimmen.",
+      },
+      "low-bmi": {
+        icon: <Shield className="h-8 w-8" strokeWidth={1.5} />,
+        bg: "bg-muted",
+        iconColor: "text-muted-foreground",
+        badge: "Nicht empfohlen",
+        badgeBg: "bg-muted text-muted-foreground",
+        title: "Aktuell nicht empfohlen.",
+        body: "Ihr BMI liegt im Normalbereich. Eine GLP-1 Therapie wird in der Regel erst ab einem BMI von 27+ empfohlen. Sprechen Sie mit Ihrem Hausarzt über Ihre Möglichkeiten.",
+      },
+      "not-eligible": {
+        icon: <X className="h-8 w-8" strokeWidth={1.5} />,
+        bg: "bg-destructive/10",
+        iconColor: "text-destructive",
+        badge: "Nicht geeignet",
+        badgeBg: "bg-destructive/10 text-destructive",
+        title: "Nicht geeignet.",
+        body: "GLP-1 Medikamente sind während der Schwangerschaft oder bei Schwangerschaftsplanung nicht geeignet. Bitte konsultieren Sie Ihren Arzt für alternative Möglichkeiten.",
+      },
+    }[result];
+
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="max-w-xl w-full text-center">
-          {result === "eligible" ? (
-            <>
-              <div className="w-20 h-20 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-8">
-                <CheckCircle className="h-10 w-10 text-accent" strokeWidth={1.5} />
+      <>
+        <style>{`
+          @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+          .anim-result { animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+          .anim-result-delay { animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.1s both; }
+          .anim-result-delay2 { animation: fadeSlideUp 0.5s cubic-bezier(0.16,1,0.3,1) 0.2s both; }
+        `}</style>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+          <div className="max-w-md w-full text-center">
+            <div className="anim-result">
+              <div className={`w-16 h-16 rounded-2xl ${resultConfig.bg} flex items-center justify-center mx-auto mb-6`}>
+                <span className={resultConfig.iconColor}>{resultConfig.icon}</span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Sie könnten geeignet sein.</h1>
-              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                Basierend auf Ihren Angaben könnten Sie für eine ärztlich begleitete GLP-1 Therapie in Frage kommen. Ein Schweizer Arzt wird Ihre Angaben prüfen und sich bei Ihnen melden.
-              </p>
-              <div className="bg-card rounded-2xl p-6 mb-8">
-                <p className="text-sm text-muted-foreground">Behandlungskosten</p>
-                <p className="text-2xl font-bold">ab CHF 299/Monat</p>
-                <p className="text-xs text-muted-foreground mt-1">inkl. ärztlicher Betreuung</p>
+              <span className={`inline-block text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full mb-6 ${resultConfig.badgeBg}`}>
+                {resultConfig.badge}
+              </span>
+            </div>
+
+            <h1 className="anim-result-delay text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">
+              {resultConfig.title}
+            </h1>
+            <p className="anim-result-delay text-base text-muted-foreground leading-relaxed mb-10">
+              {resultConfig.body}
+            </p>
+
+            {result === "eligible" && (
+              <div className="anim-result-delay bg-card rounded-2xl p-6 mb-8 text-left">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Behandlungskosten</p>
+                    <p className="text-3xl font-bold">ab CHF 149</p>
+                    <p className="text-xs text-muted-foreground mt-1">pro Monat · inkl. ärztlicher Betreuung</p>
+                  </div>
+                  <Link to="/pricing">
+                    <Button variant="outline" size="sm" className="rounded-full text-xs gap-1">
+                      Preise <ArrowRight className="h-3 w-3" />
+                    </Button>
+                  </Link>
+                </div>
               </div>
-            </>
-          ) : result === "borderline" ? (
-            <>
-              <div className="w-20 h-20 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-8">
-                <AlertTriangle className="h-10 w-10 text-warning" strokeWidth={1.5} />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Ärztliche Beratung empfohlen.</h1>
-              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                Basierend auf Ihren Angaben empfehlen wir ein persönliches Gespräch mit einem unserer Ärzte, um die beste Behandlung für Sie zu bestimmen.
-              </p>
-            </>
-          ) : result === "low-bmi" ? (
-            <>
-              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-8">
-                <Shield className="h-10 w-10 text-muted-foreground" strokeWidth={1.5} />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Aktuell nicht empfohlen.</h1>
-              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                Ihr BMI liegt im Normalbereich. Eine GLP-1 Therapie wird in der Regel erst ab einem BMI von 27+ empfohlen. Sprechen Sie mit Ihrem Hausarzt über Ihre Möglichkeiten.
-              </p>
-            </>
-          ) : (
-            <>
-              <div className="w-20 h-20 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-8">
-                <AlertTriangle className="h-10 w-10 text-destructive" strokeWidth={1.5} />
-              </div>
-              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Nicht geeignet.</h1>
-              <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
-                GLP-1 Medikamente sind während der Schwangerschaft oder bei Schwangerschaftsplanung nicht geeignet. Bitte konsultieren Sie Ihren Arzt für alternative Möglichkeiten.
-              </p>
-            </>
-          )}
-          <Link to="/">
-            <Button size="lg" className="gap-2 rounded-full px-8 h-12">
-              Zurück zur Startseite
-            </Button>
-          </Link>
-          <p className="text-xs text-muted-foreground mt-10 max-w-md mx-auto">
-            Diese Einschätzung ersetzt keine ärztliche Diagnose. Alle Behandlungen erfolgen gemäss Schweizer Heilmittelgesetz (HMG) und unter ärztlicher Aufsicht.
-          </p>
+            )}
+
+            <div className="anim-result-delay2 flex flex-col gap-3">
+              <Link to="/">
+                <Button size="lg" className="w-full h-13 rounded-full text-base font-semibold gap-2">
+                  Zur Startseite <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+              <button
+                onClick={() => { setStep(0); setAnswers({}); setShowResult(false); setAnimKey(0); }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Fragebogen wiederholen
+              </button>
+            </div>
+
+            <p className="text-xs text-muted-foreground mt-10 max-w-sm mx-auto leading-relaxed">
+              Diese Einschätzung ersetzt keine ärztliche Diagnose. Alle Behandlungen erfolgen gemäss Schweizer Heilmittelgesetz (HMG) und unter ärztlicher Aufsicht.
+            </p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  const showCta = current.type !== "radio";
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md">
-        <div className="container mx-auto flex items-center justify-between h-16 px-6 max-w-2xl">
-          <button
-            onClick={prevStep}
-            disabled={step === 0}
-            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <ArrowLeft className="h-4 w-4" /> Zurück
-          </button>
-          <span className="text-xs font-medium text-muted-foreground tracking-wide uppercase">{genderLabel} · {step + 1} / {questions.length}</span>
-          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            Abbrechen
-          </Link>
-        </div>
-        {/* Slim progress bar */}
-        <div className="h-0.5 bg-border/60">
-          <div
-            className="h-full bg-foreground transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      </header>
+    <>
+      <style>{`
+        @keyframes questionIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes questionOut {
+          from { opacity: 1; transform: translateY(0); }
+          to   { opacity: 0; transform: translateY(-12px); }
+        }
+        .question-enter { animation: questionIn 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+        @keyframes checkPop {
+          0%   { transform: scale(0.5); opacity: 0; }
+          70%  { transform: scale(1.15); }
+          100% { transform: scale(1); opacity: 1; }
+        }
+        .check-pop { animation: checkPop 0.25s cubic-bezier(0.34,1.56,0.64,1) both; }
+        @keyframes barFill {
+          from { width: 0%; }
+        }
+      `}</style>
 
-      <main className="flex-1 flex items-start md:items-center">
-        <div className="container mx-auto px-6 py-10 md:py-16 max-w-2xl w-full">
-          <div className="mb-10 md:mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-tight mb-3">{current.title}</h2>
-            {current.subtitle && (
-              <p className="text-base text-muted-foreground leading-relaxed">{current.subtitle}</p>
-            )}
-          </div>
+      <div className="min-h-screen bg-background flex flex-col">
+        {/* Header */}
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+          <div className="container mx-auto flex items-center justify-between h-14 px-5 max-w-xl">
+            <button
+              onClick={prevStep}
+              disabled={step === 0}
+              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Zurück</span>
+            </button>
 
-          {/* Radio */}
-          {current.type === "radio" && (
-            <div className="space-y-3">
-              {current.options!.map((opt) => {
-                const selected = answers[current.id] === opt.value;
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => handleRadio(opt.value)}
-                    className={`w-full flex items-center justify-between gap-4 px-5 py-5 rounded-2xl border-2 text-left transition-all ${
-                      selected
-                        ? "border-foreground bg-card"
-                        : "border-border hover:border-foreground/40 bg-background"
-                    }`}
-                  >
-                    <span className="font-medium text-base">{opt.label}</span>
-                    <span
-                      className={`flex-shrink-0 h-6 w-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                        selected ? "border-foreground bg-foreground" : "border-border"
-                      }`}
-                    >
-                      {selected && <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Number pair */}
-          {current.type === "number-pair" && (
-            <div className="grid grid-cols-2 gap-4">
-              {current.fields!.map((field) => (
-                <div key={field.id}>
-                  <label className="text-sm font-medium mb-2 block text-muted-foreground">{field.label}</label>
-                  <div className="relative">
-                    <Input
-                      type="number"
-                      inputMode="numeric"
-                      placeholder={field.placeholder}
-                      value={(answers[current.id] as Record<string, string>)?.[field.id] || ""}
-                      onChange={(e) => handleNumberField(field.id, e.target.value)}
-                      className="h-14 text-lg font-medium pr-12 rounded-2xl border-2 focus-visible:ring-0 focus-visible:border-foreground"
-                    />
-                    {field.suffix && (
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">{field.suffix}</span>
-                    )}
-                  </div>
-                </div>
+            {/* Step dots */}
+            <div className="flex items-center gap-1.5">
+              {questions.map((_, i) => (
+                <span
+                  key={i}
+                  className={`rounded-full transition-all duration-300 ${
+                    i === step
+                      ? "w-5 h-1.5 bg-foreground"
+                      : i < step
+                      ? "w-1.5 h-1.5 bg-foreground/40"
+                      : "w-1.5 h-1.5 bg-border"
+                  }`}
+                />
               ))}
             </div>
-          )}
 
-          {/* Checkbox */}
-          {current.type === "checkbox" && (
-            <div className="space-y-3">
-              {current.options!.map((opt) => {
-                const checked = ((answers[current.id] as string[]) || []).includes(opt.value);
-                return (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    onClick={() => handleCheckbox(opt.value, !checked)}
-                    className={`w-full flex items-center justify-between gap-4 px-5 py-5 rounded-2xl border-2 text-left transition-all ${
-                      checked
-                        ? "border-foreground bg-card"
-                        : "border-border hover:border-foreground/40 bg-background"
-                    }`}
-                  >
-                    <span className="font-medium text-base">{opt.label}</span>
-                    <span
-                      className={`flex-shrink-0 h-6 w-6 rounded-md border-2 flex items-center justify-center transition-all ${
-                        checked ? "border-foreground bg-foreground" : "border-border"
-                      }`}
-                    >
-                      {checked && <Check className="h-3.5 w-3.5 text-background" strokeWidth={3} />}
-                    </span>
-                  </button>
-                );
-              })}
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Abbrechen
+            </Link>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-px bg-border/40 relative overflow-hidden">
+            <div
+              className="absolute left-0 top-0 h-full bg-foreground transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </header>
+
+        <main className="flex-1 flex items-start md:items-center">
+          <div className="container mx-auto px-5 pt-10 pb-6 max-w-xl w-full">
+            {/* Question */}
+            <div key={animKey} className="question-enter">
+              <div className="mb-8">
+                <span className="text-xs font-semibold text-muted-foreground/50 tabular-nums tracking-widest">
+                  {String(step + 1).padStart(2, "0")} / {String(questions.length).padStart(2, "0")}
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mt-2 mb-2">
+                  {current.title}
+                </h2>
+                {current.subtitle && (
+                  <p className="text-sm text-muted-foreground leading-relaxed">{current.subtitle}</p>
+                )}
+              </div>
+
+              {/* Radio */}
+              {current.type === "radio" && (
+                <div className="space-y-2.5">
+                  {current.options!.map((opt) => {
+                    const selected = answers[current.id] === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => handleRadio(opt.value)}
+                        className={`group w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-200 ${
+                          selected
+                            ? "bg-foreground text-background scale-[1.01]"
+                            : "bg-card hover:bg-card/80 hover:scale-[1.005] active:scale-[0.998]"
+                        }`}
+                      >
+                        {opt.emoji && (
+                          <span className="text-xl w-7 text-center shrink-0">{opt.emoji}</span>
+                        )}
+                        <span className="flex-1 font-medium text-base">{opt.label}</span>
+                        <span
+                          className={`shrink-0 h-5 w-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                            selected
+                              ? "border-background bg-background"
+                              : "border-border/60 group-hover:border-foreground/30"
+                          }`}
+                        >
+                          {selected && (
+                            <span className="check-pop">
+                              <Check className="h-3 w-3 text-foreground" strokeWidth={3} />
+                            </span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Number pair */}
+              {current.type === "number-pair" && (
+                <div className="grid grid-cols-2 gap-3">
+                  {current.fields!.map((field) => (
+                    <div key={field.id} className="bg-card rounded-2xl p-4">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">
+                        {field.label}
+                      </label>
+                      <div className="flex items-end gap-1.5">
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          placeholder={field.placeholder}
+                          value={(answers[current.id] as Record<string, string>)?.[field.id] || ""}
+                          onChange={(e) => handleNumberField(field.id, e.target.value)}
+                          className="h-12 text-2xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                        />
+                        {field.suffix && (
+                          <span className="text-sm font-medium text-muted-foreground pb-2 shrink-0">{field.suffix}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Checkbox */}
+              {current.type === "checkbox" && (
+                <div className="space-y-2.5">
+                  {current.options!.map((opt) => {
+                    const checked = ((answers[current.id] as string[]) || []).includes(opt.value);
+                    return (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => handleCheckbox(opt.value, !checked)}
+                        className={`group w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-200 ${
+                          checked
+                            ? "bg-foreground text-background scale-[1.01]"
+                            : "bg-card hover:bg-card/80 hover:scale-[1.005] active:scale-[0.998]"
+                        }`}
+                      >
+                        <span className="flex-1 font-medium text-base">{opt.label}</span>
+                        <span
+                          className={`shrink-0 h-5 w-5 rounded-md border-2 flex items-center justify-center transition-all duration-200 ${
+                            checked
+                              ? "border-background bg-background"
+                              : "border-border/60 group-hover:border-foreground/30"
+                          }`}
+                        >
+                          {checked && (
+                            <span className="check-pop">
+                              <Check className="h-3 w-3 text-foreground" strokeWidth={3} />
+                            </span>
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </main>
+          </div>
+        </main>
 
-      {/* Sticky bottom CTA */}
-      <div className="sticky bottom-0 bg-gradient-to-t from-background via-background to-background/0 pt-6 pb-6">
-        <div className="container mx-auto px-6 max-w-2xl">
-          <Button
-            onClick={next}
-            disabled={!canProceed}
-            size="lg"
-            className="w-full h-14 rounded-full text-base font-semibold gap-2 disabled:opacity-30"
-          >
-            {step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
+        {/* Sticky CTA — shown for non-radio questions */}
+        {showCta && (
+          <div className="sticky bottom-0 px-5 pb-8 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+            <div className="container mx-auto max-w-xl">
+              <Button
+                onClick={advance}
+                disabled={!canProceed}
+                size="lg"
+                className="w-full h-13 rounded-full text-base font-semibold gap-2 transition-all duration-200 disabled:opacity-20"
+              >
+                {step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 
