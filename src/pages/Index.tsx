@@ -344,7 +344,8 @@ const Index = () => {
       {/* === 3. Hero — huge editorial headline on the left, trust list on the right === */}
       <section className="px-4 pt-16 pb-12 md:pt-24 md:pb-16">
         <div className="container mx-auto">
-          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
+          {/* items-start so the trust list lines up with the top of the headline */}
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             <div className="lg:col-span-8">
               <h1 className="font-editorial text-[56px] md:text-[88px] lg:text-[112px] leading-[0.9] tracking-tight">
                 Gesünder werden<br />mit helvi.
