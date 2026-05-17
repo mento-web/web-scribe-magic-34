@@ -480,6 +480,18 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Section heading */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+            Gewichtsverlust
+          </p>
+          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] max-w-xl">
+            Verschreibungspflichtige<br />Behandlung. Klinisch geprüft.
+          </h2>
+        </div>
+      </section>
+
       {/* BMI Rechner */}
       <section id="bmi-rechner" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
