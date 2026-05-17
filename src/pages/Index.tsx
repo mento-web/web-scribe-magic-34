@@ -390,7 +390,7 @@ const Index = () => {
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
             <div className="lg:col-span-8">
               <h1 className="font-editorial text-[56px] md:text-[88px] lg:text-[112px] leading-[0.9] tracking-tight">
-                Gesünder<br />mit helvi.
+                Gesünder werden<br />mit helvi.
               </h1>
               <p className="mt-6 text-lg text-muted-foreground max-w-md">
                 Ärztlich begleitete Gewichtsreduktion in der Schweiz.
