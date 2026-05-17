@@ -120,7 +120,7 @@
    Utilities
 
    `font-editorial` is the serif typeface used only for big editorial
-   headlines (the "Gesünder mit helvi.", "Drop 20 %", etc.). Body text and
+   headlines (the "Gesünder werden mit helvi.", "Drop 20 %", etc.). Body text and
    small UI labels stay in DM Sans.
    ========================================================================= */
 @layer utilities {
