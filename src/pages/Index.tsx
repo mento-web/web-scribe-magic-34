@@ -1,14 +1,34 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Pill,
+  Stethoscope,
+  Globe,
+  User,
+  X,
+  Leaf,
+  MessageCircle,
+  LayoutDashboard,
+  ShieldCheck,
+  Play,
+  Star,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import heroProduct from "@/assets/hero-product.jpg";
-import heroMan from "@/assets/hero-man.jpg";
-import heroWoman from "@/assets/hero-woman.jpg";
+import glp1Pens from "@/assets/glp1-pens.png";
+import djKhaledHero from "@/assets/dj-khaled-hero.png";
 
-// Dark-styled BMI form — lives inside the black hero card
-const HeroBmiWidget = () => {
+const BmiWidget = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
   const navigate = useNavigate();
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
@@ -17,14 +37,25 @@ const HeroBmiWidget = () => {
   const go = () => {
     if (canSubmit) navigate(`/analyse?height=${height}&weight=${weight}&gender=${gender}`);
   };
+
+  const isDark = variant === "dark";
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
         {(["women", "men"] as const).map((g) => (
           <button
-            key={g} type="button" onClick={() => setGender(g)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              gender === g ? "bg-white text-black" : "bg-white/10 text-white/50 hover:text-white/80"
+            key={g}
+            type="button"
+            onClick={() => setGender(g)}
+            className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+              isDark
+                ? gender === g
+                  ? "bg-white text-black"
+                  : "bg-white/10 text-white/50 hover:text-white/80"
+                : gender === g
+                ? "bg-foreground text-background"
+                : "bg-muted text-muted-foreground hover:text-foreground"
             }`}
           >
             {g === "women" ? "Frau" : "Mann"}
@@ -36,23 +67,49 @@ const HeroBmiWidget = () => {
           { label: "Grösse", value: height, set: setHeight, placeholder: "175", suffix: "cm" },
           { label: "Gewicht", value: weight, set: setWeight, placeholder: "90", suffix: "kg" },
         ].map((f) => (
-          <div key={f.label} className="bg-white/10 rounded-2xl p-4">
-            <label className="text-xs font-semibold text-white/40 uppercase tracking-wider block mb-2">{f.label}</label>
+          <div
+            key={f.label}
+            className={`rounded-2xl p-4 ${isDark ? "bg-white/10" : "bg-muted"}`}
+          >
+            <label
+              className={`text-xs font-semibold uppercase tracking-wider block mb-2 ${
+                isDark ? "text-white/40" : "text-muted-foreground"
+              }`}
+            >
+              {f.label}
+            </label>
             <div className="flex items-end gap-1">
-              <input
-                type="number" inputMode="numeric" placeholder={f.placeholder}
-                value={f.value} onChange={(e) => f.set(e.target.value)}
+              <Input
+                type="number"
+                inputMode="numeric"
+                placeholder={f.placeholder}
+                value={f.value}
+                onChange={(e) => f.set(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && go()}
-                className="w-full h-10 text-2xl font-bold bg-transparent text-white placeholder:text-white/20 border-0 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                className={`h-10 text-2xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
+                  isDark
+                    ? "text-white placeholder:text-white/20"
+                    : "placeholder:text-muted-foreground/30"
+                }`}
               />
-              <span className="text-sm text-white/30 pb-1 shrink-0">{f.suffix}</span>
+              <span
+                className={`text-sm pb-1 shrink-0 ${
+                  isDark ? "text-white/30" : "text-muted-foreground"
+                }`}
+              >
+                {f.suffix}
+              </span>
             </div>
           </div>
         ))}
       </div>
       <button
-        type="button" onClick={go} disabled={!canSubmit}
-        className="w-full py-3.5 rounded-full bg-accent text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-30 hover:opacity-90 transition-opacity"
+        type="button"
+        onClick={go}
+        disabled={!canSubmit}
+        className={`w-full py-3.5 rounded-full text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-30 transition-opacity hover:opacity-90 ${
+          isDark ? "bg-white text-black" : "bg-foreground text-background"
+        }`}
       >
         Prognose berechnen <ArrowRight className="h-4 w-4" />
       </button>
@@ -60,334 +117,738 @@ const HeroBmiWidget = () => {
   );
 };
 
-// Light-styled BMI form — used in the section below
-const BmiWidget = () => {
-  const navigate = useNavigate();
-  const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
-  const [gender, setGender] = useState<"women" | "men">("women");
-  const canSubmit = Number(height) > 0 && Number(weight) > 0;
-  const go = () => {
-    if (canSubmit) navigate(`/analyse?height=${height}&weight=${weight}&gender=${gender}`);
-  };
+const UtilityBar = () => {
+  const [open, setOpen] = useState(true);
+  if (!open) return null;
   return (
-    <div className="space-y-5">
-      <div className="flex gap-2">
-        {(["women", "men"] as const).map((g) => (
-          <button
-            key={g} type="button" onClick={() => setGender(g)}
-            className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-              gender === g ? "bg-foreground text-background" : "bg-background text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {g === "women" ? "Frau" : "Mann"}
-          </button>
-        ))}
+    <div className="bg-accent text-white text-sm">
+      <div className="container mx-auto flex items-center justify-center relative h-9 px-4">
+        <p className="text-center">
+          Online-Beratung fortsetzen?{" "}
+          <Link to="/survey/women" className="underline underline-offset-4 font-medium">
+            Weiter
+          </Link>
+        </p>
+        <button
+          onClick={() => setOpen(false)}
+          aria-label="Schliessen"
+          className="absolute right-4 opacity-80 hover:opacity-100"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: "Grösse", value: height, set: setHeight, placeholder: "175", suffix: "cm" },
-          { label: "Gewicht", value: weight, set: setWeight, placeholder: "90", suffix: "kg" },
-        ].map((f) => (
-          <div key={f.label} className="bg-background rounded-2xl p-4">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">{f.label}</label>
-            <div className="flex items-end gap-1.5">
-              <Input
-                type="number" inputMode="numeric" placeholder={f.placeholder}
-                value={f.value} onChange={(e) => f.set(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && go()}
-                className="h-11 text-2xl font-bold border-0 bg-transparent p-0 focus-visible:ring-0 placeholder:text-muted-foreground/30 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              />
-              <span className="text-sm font-medium text-muted-foreground pb-1.5 shrink-0">{f.suffix}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Button onClick={go} disabled={!canSubmit} size="lg" className="w-full rounded-full font-semibold gap-2 disabled:opacity-30">
-        Jetzt prüfen <ArrowRight className="h-4 w-4" />
-      </Button>
     </div>
   );
 };
 
-const Index = () => {
-  return (
-    <div className="min-h-screen bg-background">
-
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto flex items-center justify-between h-16 px-4 gap-4">
-          <Link to="/" className="text-2xl font-bold tracking-tight">helvi</Link>
-          <div className="flex items-center gap-6">
-            <a href="#bmi-rechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              BMI Rechner
-            </a>
-            <Link to="/pricing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Preise
-            </Link>
-            <Link to="/survey/women">
-              <Button className="rounded-full px-6 text-sm font-medium">Jetzt starten</Button>
-            </Link>
-          </div>
-        </div>
+const Header = () => (
+  <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
+    <div className="container mx-auto flex items-center justify-between h-16 px-4">
+      <Link to="/" className="text-2xl font-bold tracking-tight lowercase">
+        helvi
+      </Link>
+      <nav className="hidden md:flex items-center gap-10">
+        <a
+          href="#bmi-rechner"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          BMI Rechner
+        </a>
+        <a
+          href="#so-funktioniert"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Wie es funktioniert
+        </a>
+        <Link
+          to="/pricing"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Preise
+        </Link>
+        <Link
+          to="/faq"
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          FAQ
+        </Link>
       </nav>
+      <Link
+        to="/survey/women"
+        aria-label="Konto"
+        className="rounded-full p-2 hover:bg-muted transition-colors"
+      >
+        <User className="h-5 w-5" />
+      </Link>
+    </div>
+  </header>
+);
 
-      {/* Hero — split layout */}
-      <section className="pt-16 min-h-[94vh] flex items-center px-4">
-        <div className="container mx-auto py-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+const TrustList = () => {
+  const items = [
+    { icon: Check, text: "Von tausenden vertraut für GLP-1" },
+    { icon: Pill, text: "Echte Schweizer Ärzte, zugelassene Medikamente" },
+    { icon: Stethoscope, text: "Beste GLP-1 Preise — mit oder ohne Versicherung" },
+    { icon: Globe, text: "100 % online starten" },
+  ];
+  return (
+    <ul className="space-y-4">
+      {items.map(({ icon: Icon, text }) => (
+        <li key={text} className="flex items-start gap-3">
+          <Icon className="h-5 w-5 mt-0.5 shrink-0" strokeWidth={1.5} />
+          <span className="text-base leading-snug">{text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
 
-            {/* Left: headline + CTAs */}
-            <div>
-              <div className="inline-flex items-center gap-1.5 bg-accent/10 text-accent rounded-full px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider mb-8">
-                Klinisch erprobt · Schweizer Ärzte
-              </div>
-              <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.92] mb-6">
-                Abnehmen,
-                <br />
-                das wirklich
-                <br />
-                <span className="text-accent">wirkt.</span>
+const PillButton = ({
+  children,
+  variant = "solid",
+  className = "",
+}: {
+  children: React.ReactNode;
+  variant?: "solid" | "outline" | "light";
+  className?: string;
+}) => {
+  const styles = {
+    solid: "bg-foreground text-background hover:opacity-90",
+    outline: "bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background",
+    light: "bg-white text-foreground hover:bg-white/90",
+  }[variant];
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors ${styles} ${className}`}
+    >
+      {children}
+    </span>
+  );
+};
+
+const ArrowCircleButton = ({ className = "" }: { className?: string }) => (
+  <span
+    className={`inline-flex items-center justify-center rounded-full h-10 w-10 bg-foreground text-background shrink-0 ${className}`}
+  >
+    <ArrowRight className="h-4 w-4" />
+  </span>
+);
+
+const GradientArt = ({
+  from,
+  to,
+  glyph,
+  label,
+}: {
+  from: string;
+  to: string;
+  glyph?: React.ReactNode;
+  label?: string;
+}) => (
+  <div
+    className="relative w-full h-full rounded-[12px] overflow-hidden flex items-center justify-center"
+    style={{ background: `linear-gradient(135deg, ${from} 0%, ${to} 100%)` }}
+  >
+    <div
+      className="absolute -top-12 -right-12 h-48 w-48 rounded-full opacity-50 blur-2xl"
+      style={{ background: from }}
+    />
+    <div
+      className="absolute -bottom-16 -left-12 h-56 w-56 rounded-full opacity-40 blur-2xl"
+      style={{ background: to }}
+    />
+    <div className="relative z-10 flex flex-col items-center gap-3 text-foreground/80">
+      {glyph}
+      {label ? <span className="text-xs font-medium uppercase tracking-wider">{label}</span> : null}
+    </div>
+  </div>
+);
+
+const AvatarTile = ({ name, gradient }: { name: string; gradient: string }) => (
+  <div className="relative aspect-[4/5] rounded-[10px] overflow-hidden group cursor-pointer">
+    <div className="absolute inset-0" style={{ background: gradient }} />
+    <div className="absolute inset-0 flex items-center justify-center">
+      <span className="font-editorial text-5xl text-white/90">{name.charAt(0)}</span>
+    </div>
+    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
+      <span className="rounded-full bg-white/95 h-10 w-10 flex items-center justify-center">
+        <Play className="h-4 w-4 fill-foreground text-foreground ml-0.5" />
+      </span>
+    </div>
+    <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/60 to-transparent">
+      <p className="text-xs font-semibold text-white">{name}</p>
+      <p className="text-[10px] text-white/70">helvi member</p>
+    </div>
+  </div>
+);
+
+const Index = () => {
+  const memberNames = [
+    { name: "Anna", gradient: "linear-gradient(135deg, #D4C5E8, #B8A5D5)" },
+    { name: "Thomas", gradient: "linear-gradient(135deg, #C8D6E5, #9FB4CB)" },
+    { name: "Sandra", gradient: "linear-gradient(135deg, #E8C5B8, #D4A89A)" },
+    { name: "Marc", gradient: "linear-gradient(135deg, #C9D2BB, #A8B596)" },
+    { name: "Lara", gradient: "linear-gradient(135deg, #F5D5C5, #E0B5A0)" },
+    { name: "David", gradient: "linear-gradient(135deg, #B5C8D5, #8FA8B8)" },
+    { name: "Petra", gradient: "linear-gradient(135deg, #DBC5DC, #B89DBB)" },
+    { name: "Stefan", gradient: "linear-gradient(135deg, #D5CFC1, #B5A89A)" },
+    { name: "Nina", gradient: "linear-gradient(135deg, #C5D5E0, #98B5C8)" },
+  ];
+
+  const testimonials = [
+    { name: "Anna M.", loc: "Zürich", text: "In 3 Monaten 12 kg abgenommen. Die ärztliche Betreuung war ausgezeichnet." },
+    { name: "Thomas K.", loc: "Bern", text: "Endlich etwas, das funktioniert. Professionell, diskret, wirksam." },
+    { name: "Sandra L.", loc: "Basel", text: "Die Online-Beratung war einfach und angenehm. Ich fühle mich bestens betreut." },
+    { name: "Marc B.", loc: "Genf", text: "Nach Jahren des Jojo-Effekts habe ich endlich eine Lösung gefunden, die wirkt." },
+    { name: "Lara R.", loc: "Lausanne", text: "Die Lieferung war diskret und schnell. Der Service ist erstklassig." },
+  ];
+
+  const articles = [
+    { title: "Wie GLP-1 funktioniert — einfach erklärt", read: "5 min Lesedauer", tint: "var(--tint-lavender)" },
+    { title: "Welche Nebenwirkungen sind normal?", read: "4 min Lesedauer", tint: "var(--tint-peach)" },
+    { title: "Abnehmen ohne Jojo-Effekt: was Studien zeigen", read: "7 min Lesedauer", tint: "var(--tint-moss)" },
+    { title: "Ernährung während der GLP-1 Therapie", read: "6 min Lesedauer", tint: "var(--tint-powder-blue)" },
+    { title: "Bewegung als Teil der Behandlung", read: "5 min Lesedauer", tint: "var(--tint-dusty-pink)" },
+    { title: "GLP-1 und Versicherung: das müssen Sie wissen", read: "8 min Lesedauer", tint: "var(--tint-taupe)" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <UtilityBar />
+      <Header />
+
+      {/* Hero — asymmetric editorial */}
+      <section className="px-4 pt-16 pb-12 md:pt-24 md:pb-16">
+        <div className="container mx-auto">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
+            <div className="lg:col-span-8">
+              <h1 className="font-editorial text-[56px] md:text-[88px] lg:text-[112px] leading-[0.9] tracking-tight">
+                Gesünder<br />mit helvi.
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed mb-9 max-w-md">
-                Bis zu −21% Körpergewicht in 12 Monaten — medizinisch begleitet, diskret nach Hause geliefert.
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/survey/women">
-                  <Button size="lg" className="rounded-full font-semibold gap-2">
-                    Für Frauen <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-                <Link to="/survey/men">
-                  <Button size="lg" variant="outline" className="rounded-full font-semibold gap-2">
-                    Für Männer <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Right: dark BMI card */}
-            <div className="bg-foreground text-background rounded-3xl p-8 md:p-10">
-              <p className="text-xs font-semibold uppercase tracking-widest opacity-40 mb-1">Sofort-Check</p>
-              <h2 className="text-2xl font-bold mb-7">Sind Sie geeignet?</h2>
-              <HeroBmiWidget />
-              <p className="text-xs opacity-25 mt-5 leading-relaxed">
-                Basiert auf klinischen Studiendaten. Keine Anmeldung erforderlich.
+              <p className="mt-6 text-lg text-muted-foreground max-w-md">
+                Ärztlich begleitete Gewichtsreduktion in der Schweiz.
               </p>
             </div>
-
+            <div className="lg:col-span-4">
+              <TrustList />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Stats strip */}
-      <section className="bg-foreground text-background py-10 px-4">
+      {/* Twin hero cards */}
+      <section className="px-4">
         <div className="container mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { stat: "−21%",     label: "Ø Gewichtsverlust" },
-              { stat: "10'000+",  label: "Patienten behandelt" },
-              { stat: "68 Wo.",   label: "Klinisch erprobt" },
-              { stat: "4.9 / 5",  label: "Patientenbewertung" },
-            ].map((s) => (
-              <div key={s.stat} className="border-l border-white/10 pl-6 first:border-0 first:pl-0">
-                <p className="text-3xl md:text-4xl font-bold tracking-tight mb-1">{s.stat}</p>
-                <p className="text-sm font-medium opacity-40">{s.label}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Link
+              to="/survey/women"
+              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
+              style={{ background: "hsl(var(--tint-lavender))" }}
+            >
+              <img
+                src={glp1Pens}
+                alt="GLP-1 Injektionspens"
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
+              />
+              <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10">
+                <h3 className="text-white text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight max-w-xs drop-shadow-sm">
+                  Neue GLP-1<br />Optionen bei helvi
+                </h3>
               </div>
+              <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 z-10">
+                <PillButton>
+                  Jetzt starten <ArrowRight className="h-4 w-4" />
+                </PillButton>
+              </div>
+            </Link>
+            <Link
+              to="/survey/men"
+              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
+              style={{ background: "hsl(var(--tint-powder-blue))" }}
+            >
+              <img
+                src={djKhaledHero}
+                alt="DJ Khaled mit helvi"
+                className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
+              />
+              <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10">
+                <h3 className="text-white text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight max-w-xs drop-shadow-sm">
+                  Abnehmen mit<br />GLP-1
+                </h3>
+              </div>
+              <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 z-10">
+                <PillButton>
+                  Jetzt starten <ArrowRight className="h-4 w-4" />
+                </PillButton>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Three secondary cards */}
+      <section className="px-4 mt-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                label: "Kostenloser Versicherungs-Check",
+                tint: "hsl(var(--tint-peach))",
+                to: "/survey/women",
+                from: "#F5D5C5",
+                to2: "#E0B5A0",
+              },
+              {
+                label: "DJ Khaleds Helvi-Reise",
+                tint: "hsl(var(--tint-dusty-pink))",
+                to: "/survey/women",
+                from: "#E8C5B8",
+                to2: "#C9A89A",
+              },
+              {
+                label: "GLP-1 zum besten Preis",
+                tint: "hsl(var(--tint-moss))",
+                to: "/pricing",
+                from: "#C9D2BB",
+                to2: "#A8B596",
+              },
+            ].map((c) => (
+              <Link
+                key={c.label}
+                to={c.to}
+                className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 transition-opacity"
+                style={{ background: c.tint }}
+              >
+                <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden">
+                  <GradientArt from={c.from} to={c.to2} />
+                </div>
+                <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
+                  {c.label}
+                </p>
+                <ArrowCircleButton className="group-hover:translate-x-1 transition-transform" />
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Bento Cards */}
-      <section className="py-16 px-4">
+      {/* Full-bleed lifestyle band */}
+      <section className="relative mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Product Card — dark */}
-            <Link
-              to="/survey/women"
-              className="group relative overflow-hidden rounded-3xl bg-foreground text-background md:row-span-2 flex flex-col p-8 md:p-10 min-h-[420px]"
-            >
-              <div className="relative z-10">
-                <p className="text-xs font-semibold uppercase tracking-widest opacity-40 mb-3">GLP-1 Therapie</p>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.05] max-w-xs">
-                  Ihre Gewichtsreise beginnt hier.
-                </h2>
+          <div
+            className="relative rounded-[14px] overflow-hidden min-h-[420px] md:min-h-[520px] flex items-center"
+            style={{
+              background:
+                "radial-gradient(120% 80% at 10% 20%, #F7E6D5 0%, #EFD4C0 35%, #E0B8A0 100%)",
+            }}
+          >
+            <div
+              className="absolute -top-32 -right-20 h-96 w-96 rounded-full blur-3xl opacity-50"
+              style={{ background: "#FBE3D2" }}
+            />
+            <div
+              className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full blur-3xl opacity-40"
+              style={{ background: "#E8B89E" }}
+            />
+            <div className="relative z-10 p-8 md:p-16 max-w-2xl">
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
+                20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
+              </h2>
+              <div className="mt-8">
+                <Link to="/survey/women">
+                  <PillButton>
+                    Jetzt abnehmen <ArrowRight className="h-4 w-4" />
+                  </PillButton>
+                </Link>
               </div>
-              <div className="relative flex-1 flex items-center justify-center my-8 md:my-10 min-h-[200px]">
-                <img
-                  src={heroProduct}
-                  alt="GLP-1 Injektionspen"
-                  className="max-h-[280px] md:max-h-[360px] w-auto object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
-                />
-              </div>
-              <div className="relative z-10 flex items-center gap-2 text-sm font-semibold">
-                Fragebogen starten
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </Link>
-
-            {/* Men Card */}
-            <Link to="/survey/men" className="group relative overflow-hidden rounded-3xl aspect-[7/5]">
-              <img
-                src={heroMan} alt="Mann"
-                className="absolute inset-0 w-full h-full object-cover object-[center_25%] group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-              <div className="relative z-10 flex flex-col justify-end h-full p-8 text-white">
-                <p className="text-sm font-medium opacity-70 mb-1">Für Männer</p>
-                <h3 className="text-xl md:text-2xl font-bold mb-2">Qualifiziert? Jetzt herausfinden.</h3>
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  Starten <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              <p className="mt-8 text-xs text-foreground/50 max-w-md">
+                Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
+              </p>
+            </div>
+            <div className="absolute top-8 right-8 md:top-12 md:right-12 bg-white/70 backdrop-blur-md border border-white/60 rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-foreground flex items-center justify-center">
+                  <Leaf className="h-4 w-4 text-background" strokeWidth={1.5} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Diese Woche</p>
+                  <p className="text-lg font-semibold">↓ 3 kg</p>
                 </div>
               </div>
-            </Link>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            {/* Women Card */}
-            <Link to="/survey/women" className="group relative overflow-hidden rounded-3xl aspect-[7/5]">
+      {/* Single product showcase */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+            Gewichtsverlust
+          </p>
+          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-10 max-w-xl">
+            Verschreibungspflichtige<br />Behandlung. Klinisch geprüft.
+          </h2>
+          <div
+            className="grid grid-cols-1 md:grid-cols-2 rounded-[14px] overflow-hidden"
+            style={{ background: "hsl(var(--tint-taupe))" }}
+          >
+            <div className="relative aspect-[5/4] md:aspect-auto min-h-[320px]">
               <img
-                src={heroWoman} alt="Frau"
-                className="absolute inset-0 w-full h-full object-cover object-[center_25%] group-hover:scale-105 transition-transform duration-700"
+                src={heroProduct}
+                alt="Semaglutid Injektionspen"
+                className="absolute inset-0 w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
-              <div className="relative z-10 flex flex-col justify-end h-full p-8 text-white">
-                <p className="text-sm font-medium opacity-70 mb-1">Für Frauen</p>
-                <h3 className="text-xl md:text-2xl font-bold mb-2">Medizinisch begleitet. Nachweislich wirksam.</h3>
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  Starten <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </div>
+            </div>
+            <div className="p-8 md:p-12 flex flex-col justify-center">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60 mb-3">
+                Auf Lager
+              </p>
+              <h3 className="font-editorial text-4xl md:text-5xl mb-2">Semaglutid</h3>
+              <p className="text-sm text-foreground/70 mb-8">
+                Wöchentliche Injektion · ärztlich verschrieben
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link to="/survey/women">
+                  <PillButton variant="solid">
+                    Jetzt starten <ArrowRight className="h-4 w-4" />
+                  </PillButton>
+                </Link>
+                <Link to="/faq">
+                  <PillButton variant="outline">Mehr erfahren</PillButton>
+                </Link>
               </div>
-            </Link>
+              <a
+                href="#sicherheit"
+                className="mt-8 text-xs text-foreground/50 underline underline-offset-4 self-start"
+              >
+                Wichtige Sicherheitsinformationen
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* BMI Rechner */}
-      <section id="bmi-rechner" className="py-20 px-4 scroll-mt-20 bg-card">
-        <div className="container mx-auto max-w-4xl">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <div>
-              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Ihre Prognose</p>
-              <h2 className="text-3xl md:text-4xl font-bold leading-[1.1] mb-4">
-                Wie viel können Sie verlieren?
+      <section id="bmi-rechner" className="mt-20 md:mt-28 px-4 scroll-mt-20">
+        <div className="container mx-auto">
+          <div className="rounded-[14px] bg-muted p-8 md:p-16">
+            <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center max-w-5xl mx-auto">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                  Ihre Prognose
+                </p>
+                <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-4">
+                  Wie viel können<br />Sie verlieren?
+                </h2>
+                <p className="text-base text-muted-foreground leading-relaxed max-w-md">
+                  Geben Sie Ihre Daten ein — wir zeigen Ihnen sofort Ihren BMI und Ihre persönliche GLP-1 Gewichtsprognose.
+                </p>
+              </div>
+              <div className="bg-background rounded-2xl p-6 md:p-8">
+                <BmiWidget variant="light" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 100% online — feature row */}
+      <section id="so-funktioniert" className="mt-20 md:mt-28 px-4 scroll-mt-20">
+        <div className="container mx-auto">
+          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
+            100 % online.<br />100 % bequem.
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                title: "Mit Ihrem Arzt 24/7 chatten",
+                tint: "hsl(var(--tint-peach))",
+                from: "#FBE3D2",
+                to: "#E8B89E",
+                glyph: <MessageCircle className="h-12 w-12" strokeWidth={1.25} />,
+                label: "Live Chat",
+              },
+              {
+                title: "Ziele an einem Ort verwalten",
+                tint: "hsl(var(--tint-lavender))",
+                from: "#D4C5E8",
+                to: "#B8A5D5",
+                glyph: <LayoutDashboard className="h-12 w-12" strokeWidth={1.25} />,
+                label: "Dashboard",
+              },
+              {
+                title: "Klinisch geprüfte, zugelassene Behandlungen",
+                tint: "hsl(var(--tint-powder-blue))",
+                from: "#C8D6E5",
+                to: "#9FB4CB",
+                glyph: <ShieldCheck className="h-12 w-12" strokeWidth={1.25} />,
+                label: "Geprüft",
+              },
+            ].map((c) => (
+              <div
+                key={c.title}
+                className="rounded-[14px] overflow-hidden flex flex-col"
+                style={{ background: c.tint }}
+              >
+                <div className="p-6 md:p-8">
+                  <h3 className="font-medium text-xl md:text-2xl leading-tight max-w-xs">
+                    {c.title}
+                  </h3>
+                </div>
+                <div className="relative flex-1 min-h-[200px] mx-6 mb-6 rounded-[12px] overflow-hidden">
+                  <GradientArt from={c.from} to={c.to} glyph={c.glyph} label={c.label} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social proof — members + big stat */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+            <div className="lg:col-span-7">
+              <div className="grid grid-cols-3 gap-3">
+                {memberNames.map((m) => (
+                  <AvatarTile key={m.name} name={m.name} gradient={m.gradient} />
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="flex items-center gap-2 mb-6">
+                <Check className="h-5 w-5" strokeWidth={2} />
+                <p className="text-sm font-medium">95 % bewerten ihre Erfahrung positiv</p>
+              </div>
+              <h2 className="font-editorial text-5xl md:text-7xl leading-[0.95] tracking-tight">
+                10'000+<br />Mitglieder<br />und es werden<br />mehr.
               </h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Geben Sie Ihre Daten ein — wir zeigen Ihnen sofort Ihren BMI und Ihre persönliche GLP-1 Gewichtsprognose.
-              </p>
             </div>
-            <BmiWidget />
+          </div>
+
+          {/* Testimonial carousel */}
+          <div className="mt-20 md:mt-24 max-w-4xl mx-auto">
+            <Carousel opts={{ loop: true }}>
+              <CarouselContent>
+                {testimonials.map((t) => (
+                  <CarouselItem key={t.name}>
+                    <div className="text-center px-4 md:px-12">
+                      <div className="flex justify-center gap-1 mb-6">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star key={i} className="h-4 w-4 fill-foreground text-foreground" />
+                        ))}
+                      </div>
+                      <p className="font-editorial text-3xl md:text-5xl leading-[1.1] mb-8">
+                        «{t.text}»
+                      </p>
+                      <p className="text-sm font-semibold">{t.name}</p>
+                      <p className="text-xs text-muted-foreground">{t.loc} · helvi member</p>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <div className="flex justify-center gap-3 mt-8">
+                <CarouselPrevious className="static translate-y-0" />
+                <CarouselNext className="static translate-y-0" />
+              </div>
+            </Carousel>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="mb-14">
-            <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">So funktioniert's</p>
-            <h2 className="text-3xl md:text-5xl font-bold">In 3 Schritten.</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-10 md:gap-12">
+      {/* Expert credibility */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-14 max-w-3xl">
+            Unterstützt von führenden<br />Schweizer Gesundheitsexperten.
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {[
-              { num: "01", title: "Fragebogen ausfüllen", desc: "3 Minuten. Anonym. Kein Arzttermin nötig." },
-              { num: "02", title: "Ärztliche Beurteilung", desc: "Ein Schweizer Arzt prüft Ihre Angaben und erstellt Ihre Empfehlung." },
-              { num: "03", title: "Behandlung starten", desc: "Ihr Medikament kommt diskret direkt zu Ihnen nach Hause." },
-            ].map((step) => (
-              <div key={step.num}>
-                <span className="block text-5xl md:text-6xl font-bold text-accent/20 mb-5">{step.num}</span>
-                <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
+              { stat: "FMH", label: "Vom Bund zugelassene Ärzte" },
+              { stat: "68 Wo.", label: "Klinisch geprüfte Studien" },
+              { stat: "CH", label: "Datenschutz nach Schweizer Standard" },
+            ].map((s) => (
+              <div key={s.stat} className="border-t border-border pt-6">
+                <p className="font-editorial text-5xl md:text-6xl mb-3">{s.stat}</p>
+                <p className="text-sm text-muted-foreground max-w-xs">{s.label}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                name: "Dr. med. M. Berger",
+                title: "FMH Allgemeine Innere Medizin",
+                affiliation: "Universität Zürich",
+                gradient: "linear-gradient(135deg, #D4C5E8, #B8A5D5)",
+              },
+              {
+                name: "Dr. med. R. Keller",
+                title: "FMH Endokrinologie",
+                affiliation: "Universitätsspital Bern",
+                gradient: "linear-gradient(135deg, #C8D6E5, #9FB4CB)",
+              },
+              {
+                name: "Dr. med. N. Wyss",
+                title: "FMH Adipositas-Medizin",
+                affiliation: "Inselspital",
+                gradient: "linear-gradient(135deg, #C9D2BB, #A8B596)",
+              },
+            ].map((a) => (
+              <div key={a.name} className="rounded-[14px] bg-muted p-6 flex gap-4">
+                <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden">
+                  <div className="h-full w-full flex items-center justify-center" style={{ background: a.gradient }}>
+                    <span className="font-editorial text-2xl text-white/90">
+                      {a.name.split(" ").slice(-1)[0].charAt(0)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <p className="font-semibold text-sm mb-1">{a.name}</p>
+                  <p className="text-xs text-muted-foreground mb-2">{a.title}</p>
+                  <p className="text-xs text-muted-foreground">{a.affiliation}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground/60 mt-4">Beispielprofile.</p>
+        </div>
+      </section>
+
+      {/* Health Guide */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
+            Wissen, das Sie<br />nutzen können.
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {articles.map((a) => (
+              <div key={a.title} className="group cursor-pointer">
+                <div
+                  className="aspect-[5/3] rounded-[12px] mb-4 overflow-hidden relative"
+                  style={{ background: `hsl(${a.tint})` }}
+                >
+                  <div
+                    className="absolute -top-10 -right-10 h-40 w-40 rounded-full blur-2xl opacity-60"
+                    style={{ background: "rgba(255,255,255,0.4)" }}
+                  />
+                  <div
+                    className="absolute -bottom-12 -left-10 h-40 w-40 rounded-full blur-2xl opacity-50"
+                    style={{ background: "rgba(0,0,0,0.05)" }}
+                  />
+                </div>
+                <h3 className="font-medium text-lg leading-snug mb-2 group-hover:underline underline-offset-4">
+                  {a.title}
+                </h3>
+                <p className="text-xs text-muted-foreground">{a.read}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials — dark inverted */}
-      <section className="py-20 px-4 bg-foreground text-background">
-        <div className="container mx-auto max-w-5xl">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-12">
-            <div>
-              <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Erfahrungsberichte</p>
-              <h2 className="text-3xl md:text-5xl font-bold">Echte Resultate.</h2>
+      {/* Final CTA */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto">
+          <div className="rounded-[14px] bg-muted py-16 md:py-24 px-8 text-center">
+            <h2 className="font-editorial text-5xl md:text-7xl leading-[0.95] mb-6">
+              Bereit anzufangen?
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-lg mx-auto">
+              In 3 Minuten wissen Sie, ob GLP-1 für Sie geeignet ist.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link to="/survey/women">
+                <PillButton variant="solid" className="w-52 justify-center">
+                  Für Frauen <ArrowRight className="h-4 w-4" />
+                </PillButton>
+              </Link>
+              <Link to="/survey/men">
+                <PillButton variant="outline" className="w-52 justify-center">
+                  Für Männer <ArrowRight className="h-4 w-4" />
+                </PillButton>
+              </Link>
             </div>
-            <div className="flex items-center gap-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-5 w-5 fill-accent text-accent" />
-              ))}
-              <span className="ml-2 text-sm font-semibold">4.9 / 5</span>
-              <span className="text-sm opacity-40 ml-1">· 10'000+ Patienten</span>
-            </div>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              { name: "Anna M.", loc: "Zürich", text: "In 3 Monaten 12 kg abgenommen. Die ärztliche Betreuung war ausgezeichnet." },
-              { name: "Thomas K.", loc: "Bern", text: "Endlich etwas, das funktioniert. Professionell, diskret, wirksam." },
-              { name: "Sandra L.", loc: "Basel", text: "Die Online-Beratung war einfach und angenehm. Ich fühle mich bestens betreut." },
-            ].map((t) => (
-              <div key={t.name} className="bg-white/5 border border-white/10 rounded-2xl p-7">
-                <div className="flex gap-0.5 mb-4">
-                  {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} className="h-3.5 w-3.5 fill-accent text-accent" />
-                  ))}
-                </div>
-                <p className="text-sm opacity-60 mb-6 leading-relaxed">«{t.text}»</p>
-                <div>
-                  <p className="font-semibold text-sm">{t.name}</p>
-                  <p className="text-xs opacity-35">{t.loc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto text-center max-w-2xl">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Bereit anzufangen?</h2>
-          <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            In 3 Minuten wissen Sie, ob GLP-1 für Sie geeignet ist.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/survey/women">
-              <Button size="lg" className="rounded-full w-52 font-semibold gap-2">
-                Für Frauen <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link to="/survey/men">
-              <Button size="lg" variant="outline" className="rounded-full w-52 font-semibold gap-2">
-                Für Männer <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t py-12 px-4">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-            <div>
-              <p className="text-xl font-bold">helvi</p>
-              <p className="text-sm text-muted-foreground mt-2 max-w-xs">
+      <footer className="mt-20 md:mt-28 border-t border-border">
+        <div className="container mx-auto px-4 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
+            <div className="col-span-2 md:col-span-1">
+              <p className="text-2xl font-bold tracking-tight lowercase mb-3">helvi</p>
+              <p className="text-xs text-muted-foreground max-w-[16ch]">
                 Ärztlich begleitete Gewichtstherapie in der Schweiz.
               </p>
             </div>
-            <div className="flex flex-col gap-2 text-sm">
-              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</Link>
-              <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">Preise</Link>
-            </div>
-            <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
-              <p>© {new Date().getFullYear()} Helvi. Alle Rechte vorbehalten.</p>
-              <p className="text-xs">
-                Dies ist kein Ersatz für eine ärztliche Beratung. Alle Behandlungen erfolgen unter ärztlicher Aufsicht gemäss Schweizer Heilmittelgesetz (HMG).
-              </p>
-            </div>
+            {[
+              { title: "Behandlung", links: [["Gewichtsverlust", "/survey/women"]] },
+              {
+                title: "Über helvi",
+                links: [
+                  ["Über uns", "#"],
+                  ["Kontakt", "#"],
+                  ["Karriere", "#"],
+                ],
+              },
+              {
+                title: "Support",
+                links: [
+                  ["FAQ", "/faq"],
+                  ["Preise", "/pricing"],
+                  ["Rückgabe", "#"],
+                ],
+              },
+              {
+                title: "Tools",
+                links: [
+                  ["BMI-Rechner", "#bmi-rechner"],
+                  ["Versicherungs-Check", "/survey/women"],
+                ],
+              },
+              {
+                title: "Legal",
+                links: [
+                  ["AGB", "#"],
+                  ["Datenschutz", "#"],
+                  ["Impressum", "#"],
+                ],
+              },
+            ].map((col) => (
+              <div key={col.title}>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-4">{col.title}</p>
+                <ul className="space-y-2.5">
+                  {col.links.map(([label, href]) => (
+                    <li key={label}>
+                      {href.startsWith("/") || href.startsWith("#") ? (
+                        <Link
+                          to={href}
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {label}
+                        </Link>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{label}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border pt-8 flex flex-col md:flex-row justify-between gap-4 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} Helvi. Alle Rechte vorbehalten.</p>
+            <p className="md:text-right max-w-xl">
+              Dies ist kein Ersatz für eine ärztliche Beratung. Alle Behandlungen erfolgen unter
+              ärztlicher Aufsicht gemäss Schweizer Heilmittelgesetz (HMG).
+            </p>
           </div>
         </div>
       </footer>
-
     </div>
   );
 };

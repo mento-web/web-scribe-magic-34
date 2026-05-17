@@ -15,8 +15,17 @@ export default {
     extend: {
       fontFamily: {
         sans: ["DM Sans", "sans-serif"],
+        serif: ["Instrument Serif", "Georgia", "serif"],
       },
       colors: {
+        tint: {
+          lavender: "hsl(var(--tint-lavender))",
+          "powder-blue": "hsl(var(--tint-powder-blue))",
+          "dusty-pink": "hsl(var(--tint-dusty-pink))",
+          taupe: "hsl(var(--tint-taupe))",
+          moss: "hsl(var(--tint-moss))",
+          peach: "hsl(var(--tint-peach))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

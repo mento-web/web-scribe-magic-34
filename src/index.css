@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,41 +7,42 @@
 
 @layer base {
   :root {
-    /* Palette: #FFFFFF #000000 #A52A2A #D2B48C #F5DEB3 */
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 0 0% 7%;
 
-    --card: 39 55% 90%;
-    --card-foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 7%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 7%;
 
-    --primary: 0 0% 0%;
+    --primary: 0 0% 7%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 34 44% 69%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 40 25% 96%;
+    --secondary-foreground: 0 0% 7%;
 
-    --muted: 39 55% 90%;
+    --muted: 40 25% 96%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 0 59% 41%;
+    --accent: 230 70% 56%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 34 30% 82%;
-    --input: 34 30% 82%;
-    --ring: 0 0% 0%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 7%;
 
-    --radius: 1rem;
+    --radius: 0.875rem;
 
-    --hero-bg: 39 77% 83%;
-    --hero-foreground: 0 0% 0%;
-    --success: 140 20% 45%;
-    --warning: 35 90% 55%;
+    --tint-lavender: 265 35% 88%;
+    --tint-powder-blue: 210 40% 88%;
+    --tint-dusty-pink: 15 45% 88%;
+    --tint-taupe: 35 25% 86%;
+    --tint-moss: 85 20% 84%;
+    --tint-peach: 25 60% 90%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -65,7 +67,7 @@
     --secondary-foreground: 39 20% 92%;
     --muted: 0 0% 14%;
     --muted-foreground: 0 0% 55%;
-    --accent: 0 59% 55%;
+    --accent: 230 70% 60%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 100%;
@@ -91,11 +93,14 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer utilities {
-  .hero-gradient {
-    background: hsl(var(--hero-bg));
+  .font-editorial {
+    font-family: 'Instrument Serif', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
   }
 }
