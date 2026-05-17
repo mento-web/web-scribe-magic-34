@@ -506,11 +506,26 @@ const Index = () => {
       </section>
 
       {/* === 6. Lifestyle band — full-bleed "20 % verlieren" hero with glass card ===
+         Above the lifestyle band: editorial section heading reintroducing the
+         prescription-treatment positioning that previously sat above the
+         removed product showcase. */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+            Gewichtsverlust
+          </p>
+          <h2 className="mt-3 font-editorial text-4xl md:text-6xl lg:text-7xl leading-[1.0] tracking-tight text-foreground">
+            Verschreibungspflichtige Behandlung.<br />Klinisch geprüft.
+          </h2>
+        </div>
+      </section>
+
+      {/* === 6. Lifestyle band — full-bleed "20 % verlieren" hero with glass card ===
          Soft warm-gradient backdrop standing in for a real lifestyle photo.
          The floating glassmorphic card top-right mimics an in-app progress
          widget ("↓ 3 kg this week"). The tiny grey line at the bottom is the
          clinical-results disclaimer — required, keep it small and present. */}
-      <section className="relative mt-20 md:mt-28 px-4">
+      <section className="relative mt-10 md:mt-14 px-4">
         <div className="container mx-auto">
           <div
             className="relative rounded-[14px] overflow-hidden min-h-[420px] md:min-h-[520px] flex items-center"
