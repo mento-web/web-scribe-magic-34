@@ -5,8 +5,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================================
+   Design tokens (light mode)
+
+   These CSS variables are the single source of truth for the helvi colour
+   palette. They are referenced two ways:
+
+     1. Directly in JSX via `style={{ background: "hsl(var(--tint-X))" }}` —
+        used a lot inside src/pages/Index.tsx.
+     2. Indirectly through Tailwind classes (e.g. `bg-muted`, `text-accent`).
+        For that to work, the same token must be mapped to a Tailwind colour
+        in tailwind.config.ts under `theme.extend.colors`.
+
+   Adding a new tint or semantic colour means editing BOTH this file AND
+   tailwind.config.ts — otherwise either the variable won't resolve or the
+   Tailwind class won't compile.
+   ========================================================================= */
 @layer base {
   :root {
+    /* Page surface and base text */
     --background: 0 0% 100%;
     --foreground: 0 0% 7%;
 
@@ -37,6 +54,8 @@
 
     --radius: 0.875rem;
 
+    /* Pastel card-background tints — used on the twin hero cards, secondary
+       CTAs, product showcase, online feature cards, and article thumbnails. */
     --tint-lavender: 265 35% 88%;
     --tint-powder-blue: 210 40% 88%;
     --tint-dusty-pink: 15 45% 88%;
@@ -97,6 +116,13 @@
   }
 }
 
+/* ============================================================================
+   Utilities
+
+   `font-editorial` is the serif typeface used only for big editorial
+   headlines (the "Gesünder mit helvi.", "Drop 20 %", etc.). Body text and
+   small UI labels stay in DM Sans.
+   ========================================================================= */
 @layer utilities {
   .font-editorial {
     font-family: 'Instrument Serif', Georgia, serif;

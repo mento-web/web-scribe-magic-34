@@ -28,6 +28,37 @@ import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
 
+/* ============================================================================
+   LANDING PAGE — `/` route
+
+   This is the marketing landing page for helvi. It is one long composed file
+   on purpose: the small helper components (BmiWidget, UtilityBar, Header,
+   TrustList, PillButton, ArrowCircleButton, GradientArt, AvatarTile) live at
+   the top of the file, and the `Index` component at the bottom assembles them
+   into the 13 page sections.
+
+   Section order (top to bottom of what the user sees):
+     1.  Utility bar          — thin royal-blue strip with "resume visit" link
+     2.  Header               — slim sticky nav with helvi wordmark + account
+     3.  Hero                 — huge "Gesünder mit helvi." + trust list
+     4.  Twin hero cards      — lavender GLP-1 pens + DJ Khaled portrait
+     5.  Secondary cards      — 3 small tinted CTAs under the twin cards
+     6.  Lifestyle band       — full-bleed "20 % verlieren" with glass card
+     7.  BMI Rechner          — restyled BMI form (anchor #bmi-rechner)
+     8.  Online features      — 3 cards explaining the online flow
+     9.  Social proof         — 3×3 member grid + 10'000+ stat + carousel
+     10. Expert credibility   — Swiss MD advisor placeholder cards
+     11. Health guide         — placeholder article tiles
+     12. Final CTA            — "Bereit anzufangen?" with dual gender CTAs
+     13. Footer               — multi-column footer + HMG disclaimer
+
+   Every primary CTA routes into the conversion funnel at /survey/women or
+   /survey/men. The BMI form navigates to /analyse with query params.
+   ========================================================================= */
+
+// BMI height-weight form. Has a light and a dark variant so it can sit on
+// either a white card or a dark band. On submit it navigates to /analyse with
+// the values as query params so the analysis page can render projections.
 const BmiWidget = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
   const navigate = useNavigate();
   const [height, setHeight] = useState("");
@@ -117,6 +148,9 @@ const BmiWidget = ({ variant = "light" }: { variant?: "light" | "dark" }) => {
   );
 };
 
+// Thin royal-blue strip at the very top of the page. Mimics Ro's
+// "resume your online visit" nudge. Dismissible via local state — when the X
+// is clicked it disappears for the rest of the session.
 const UtilityBar = () => {
   const [open, setOpen] = useState(true);
   if (!open) return null;
@@ -141,6 +175,9 @@ const UtilityBar = () => {
   );
 };
 
+// Sticky white nav. Helvi wordmark left, flat nav links center, account icon
+// right. Intentionally no mega-menu — helvi only offers one product, so the
+// nav stays minimal and editorial.
 const Header = () => (
   <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
     <div className="container mx-auto flex items-center justify-between h-16 px-4">
@@ -184,6 +221,8 @@ const Header = () => (
   </header>
 );
 
+// Right column of the hero. Four icon + text bullets that build trust fast:
+// who uses helvi, who prescribes, pricing positioning, and onboarding ease.
 const TrustList = () => {
   const items = [
     { icon: Check, text: "Von tausenden vertraut für GLP-1" },
@@ -203,6 +242,10 @@ const TrustList = () => {
   );
 };
 
+// Reusable rounded-full pill button used as a CTA throughout the page.
+// `solid` = black bg / white text (primary), `outline` = transparent / black
+// border (secondary), `light` = white bg used over dark photo cards.
+// This renders a span so it can be nested inside <Link>.
 const PillButton = ({
   children,
   variant = "solid",
@@ -226,6 +269,8 @@ const PillButton = ({
   );
 };
 
+// Small black circle with a white arrow inside. Used as the trailing
+// "go here" icon on the three secondary cards under the twin hero cards.
 const ArrowCircleButton = ({ className = "" }: { className?: string }) => (
   <span
     className={`inline-flex items-center justify-center rounded-full h-10 w-10 bg-foreground text-background shrink-0 ${className}`}
@@ -234,6 +279,10 @@ const ArrowCircleButton = ({ className = "" }: { className?: string }) => (
   </span>
 );
 
+// Decorative gradient block that stands in for real photography. Renders a
+// soft two-tone gradient with blurred radial blobs on top, and an optional
+// foreground glyph + uppercase label. Used in the secondary cards and the
+// "100 % online" feature row until real photos are provided.
 const GradientArt = ({
   from,
   to,
@@ -264,6 +313,9 @@ const GradientArt = ({
   </div>
 );
 
+// One tile in the 3×3 member-video grid. Renders the member's initial over a
+// soft gradient, a play button overlay on hover, and a name caption with a
+// "helvi member" tag. Stands in for real testimonial videos until they exist.
 const AvatarTile = ({ name, gradient }: { name: string; gradient: string }) => (
   <div className="relative aspect-[4/5] rounded-[10px] overflow-hidden group cursor-pointer">
     <div className="absolute inset-0" style={{ background: gradient }} />
@@ -282,7 +334,16 @@ const AvatarTile = ({ name, gradient }: { name: string; gradient: string }) => (
   </div>
 );
 
+/* ============================================================================
+   Index — the assembled landing page
+
+   Composes the 14 sections in display order. Static data (member names,
+   testimonials, article placeholders) is defined inline at the top of the
+   component so it's easy to find and edit.
+   ========================================================================= */
 const Index = () => {
+  // 3×3 member-tile grid data. Each name pairs with a soft pastel gradient.
+  // When real testimonial videos arrive, swap these for thumbnails.
   const memberNames = [
     { name: "Anna", gradient: "linear-gradient(135deg, #D4C5E8, #B8A5D5)" },
     { name: "Thomas", gradient: "linear-gradient(135deg, #C8D6E5, #9FB4CB)" },
@@ -295,6 +356,7 @@ const Index = () => {
     { name: "Nina", gradient: "linear-gradient(135deg, #C5D5E0, #98B5C8)" },
   ];
 
+  // Pull-quote carousel under the member grid. German Swiss-city locations.
   const testimonials = [
     { name: "Anna M.", loc: "Zürich", text: "In 3 Monaten 12 kg abgenommen. Die ärztliche Betreuung war ausgezeichnet." },
     { name: "Thomas K.", loc: "Bern", text: "Endlich etwas, das funktioniert. Professionell, diskret, wirksam." },
@@ -303,6 +365,8 @@ const Index = () => {
     { name: "Lara R.", loc: "Lausanne", text: "Die Lieferung war diskret und schnell. Der Service ist erstklassig." },
   ];
 
+  // Health Guide placeholder articles. These are stubs until the blog exists —
+  // each title pairs with a pastel tint variable for its thumbnail background.
   const articles = [
     { title: "Wie GLP-1 funktioniert — einfach erklärt", read: "5 min Lesedauer", tint: "var(--tint-lavender)" },
     { title: "Welche Nebenwirkungen sind normal?", read: "4 min Lesedauer", tint: "var(--tint-peach)" },
@@ -314,10 +378,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* === 1. Utility bar — royal-blue strip at the very top === */}
       <UtilityBar />
+
+      {/* === 2. Header — sticky white nav with helvi wordmark === */}
       <Header />
 
-      {/* Hero — asymmetric editorial */}
+      {/* === 3. Hero — huge editorial headline on the left, trust list on the right === */}
       <section className="px-4 pt-16 pb-12 md:pt-24 md:pb-16">
         <div className="container mx-auto">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
@@ -336,10 +403,13 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Twin hero cards */}
+      {/* === 4. Twin hero cards — the two big photo CTAs side-by-side ===
+         Left card uses the lavender GLP-1 pen shot, right card uses the
+         DJ Khaled "helvi" portrait. Both route into the survey funnel. */}
       <section className="px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Left card — lavender background + GLP-1 pen product photo */}
             <Link
               to="/survey/women"
               className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
@@ -361,6 +431,7 @@ const Index = () => {
                 </PillButton>
               </div>
             </Link>
+            {/* Right card — powder-blue background + DJ Khaled portrait */}
             <Link
               to="/survey/men"
               className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
@@ -386,7 +457,9 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Three secondary cards */}
+      {/* === 5. Secondary cards — three small tinted CTAs under the twin cards ===
+         Insurance check, DJ Khaled's journey, and pricing — each a soft tile
+         with a gradient thumbnail, a label, and a small circular arrow. */}
       <section className="px-4 mt-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -432,7 +505,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Full-bleed lifestyle band */}
+      {/* === 6. Lifestyle band — full-bleed "20 % verlieren" hero with glass card ===
+         Soft warm-gradient backdrop standing in for a real lifestyle photo.
+         The floating glassmorphic card top-right mimics an in-app progress
+         widget ("↓ 3 kg this week"). The tiny grey line at the bottom is the
+         clinical-results disclaimer — required, keep it small and present. */}
       <section className="relative mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
           <div
@@ -480,7 +557,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* BMI Rechner */}
+      {/* === 7. BMI Rechner — restyled BMI form section ===
+         Anchor target for the header's "BMI Rechner" link. Off-white band
+         with a serif headline on the left and the light-variant BmiWidget on
+         the right. Submitting navigates to /analyse with height/weight/gender
+         as query params. */}
       <section id="bmi-rechner" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
           <div className="rounded-[14px] bg-muted p-8 md:p-16">
@@ -504,7 +585,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* 100% online — feature row */}
+      {/* === 8. Online features — three "100 % online" cards ===
+         Anchor target for the header's "Wie es funktioniert" link. Each card
+         has a tinted background, a short headline, and a GradientArt block
+         with a glyph (chat bubble, dashboard, shield) standing in for the
+         eventual screenshot or illustration. */}
       <section id="so-funktioniert" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
           <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
@@ -556,7 +641,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Social proof — members + big stat */}
+      {/* === 9. Social proof — 3×3 member grid + 10'000+ stat + carousel ===
+         Two-column composition. Left: nine "member tiles" (initial + gradient,
+         play-button on hover) standing in for real testimonial videos. Right:
+         huge serif "10'000+ Mitglieder" stat with a 95 % satisfaction check.
+         Below: a centered pull-quote carousel (shadcn Carousel) of 5 quotes. */}
       <section className="mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
@@ -578,7 +667,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Testimonial carousel */}
+          {/* Pull-quote carousel — loops through 5 anonymized testimonials */}
           <div className="mt-20 md:mt-24 max-w-4xl mx-auto">
             <Carousel opts={{ loop: true }}>
               <CarouselContent>
@@ -608,7 +697,11 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Expert credibility */}
+      {/* === 10. Expert credibility — Swiss MD advisors ===
+         Three stat blocks at the top (FMH licensing, clinical study weeks,
+         Swiss data protection), then three placeholder advisor cards. The
+         "Beispielprofile" caption below the cards flags that the names are
+         placeholders until real Swiss advisors are confirmed. */}
       <section className="mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
           <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-14 max-w-3xl">
@@ -668,7 +761,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Health Guide */}
+      {/* === 11. Health Guide — placeholder article tiles ===
+         Six article cards with gradient thumbnails and read-time captions.
+         These are stubs (no real blog yet) — wire each card up to a real
+         article URL once content exists. */}
       <section className="mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
           <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
@@ -700,7 +796,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* === 12. Final CTA — "Bereit anzufangen?" band ===
+         Last push before the footer. Off-white tinted block with a serif
+         headline and two pill buttons (Frauen / Männer) routing to the
+         survey funnel — same destinations as the hero CTAs. */}
       <section className="mt-20 md:mt-28 px-4">
         <div className="container mx-auto">
           <div className="rounded-[14px] bg-muted py-16 md:py-24 px-8 text-center">
@@ -726,7 +825,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* === 13. Footer — multi-column nav + Swiss HMG legal disclaimer ===
+         Five-column link grid (Behandlung / Über helvi / Support / Tools /
+         Legal) plus the helvi wordmark column on the left. The HMG line at
+         the bottom is legally load-bearing — do not paraphrase or remove. */}
       <footer className="mt-20 md:mt-28 border-t border-border">
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">

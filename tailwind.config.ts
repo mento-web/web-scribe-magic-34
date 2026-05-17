@@ -14,10 +14,16 @@ export default {
     },
     extend: {
       fontFamily: {
+        // Default body / UI typeface.
         sans: ["DM Sans", "sans-serif"],
+        // Editorial serif for headlines. Also exposed via the
+        // `font-editorial` utility class in src/index.css.
         serif: ["Instrument Serif", "Georgia", "serif"],
       },
       colors: {
+        // Pastel card-background palette. Source of truth is the
+        // `--tint-*` CSS variables in src/index.css — these are only the
+        // Tailwind aliases. Keep both in sync.
         tint: {
           lavender: "hsl(var(--tint-lavender))",
           "powder-blue": "hsl(var(--tint-powder-blue))",
