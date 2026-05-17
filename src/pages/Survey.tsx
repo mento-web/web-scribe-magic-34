@@ -228,16 +228,18 @@ const Survey = () => {
                 {cfg.badge}
               </span>
             </div>
-            <h1 className="anim-1 text-4xl md:text-5xl font-bold tracking-tight leading-[1.1] mb-5">{cfg.title}</h1>
+            {/* Editorial serif title — matches the landing-page typography contrast */}
+            <h1 className="anim-1 font-editorial text-5xl md:text-6xl leading-[0.95] tracking-tight mb-5">{cfg.title}</h1>
             <p className="anim-1 text-base text-muted-foreground leading-relaxed mb-10">{cfg.body}</p>
 
+            {/* Eligible-only pricing teaser — off-white card with serif price for editorial weight */}
             {result === "eligible" && (
-              <div className="anim-1 bg-card rounded-2xl p-6 mb-8 text-left">
-                <div className="flex items-center justify-between">
+              <div className="anim-1 bg-muted rounded-[14px] p-6 mb-8 text-left">
+                <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Behandlungskosten</p>
-                    <p className="text-3xl font-bold">ab CHF 149</p>
-                    <p className="text-xs text-muted-foreground mt-1">pro Monat · inkl. ärztlicher Betreuung</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-[0.18em] mb-1">Behandlungskosten</p>
+                    <p className="font-editorial text-4xl leading-none">ab CHF 149</p>
+                    <p className="text-xs text-muted-foreground mt-2">pro Monat · inkl. ärztlicher Betreuung</p>
                   </div>
                   <Link to="/pricing">
                     <Button variant="outline" size="sm" className="rounded-full text-xs gap-1">
@@ -248,9 +250,10 @@ const Survey = () => {
               </div>
             )}
 
+            {/* Primary "back home" pill + ghost "redo survey" link */}
             <div className="anim-2 flex flex-col gap-3">
               <Link to="/">
-                <Button size="lg" className="w-full rounded-full text-base font-semibold gap-2">
+                <Button size="lg" className="w-full rounded-full text-base font-medium gap-2">
                   Zur Startseite <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
@@ -309,8 +312,9 @@ const Survey = () => {
         <main className="flex-1 flex items-start md:items-center">
           <div className="container mx-auto px-5 pt-10 pb-6 max-w-xl w-full">
             <div key={animKey} className="question-enter">
+              {/* Editorial serif question title — keeps the calm, confident tone */}
               <div className="mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight leading-[1.1] mb-2">{current.title}</h2>
+                <h2 className="font-editorial text-4xl md:text-5xl leading-[1] tracking-tight mb-3">{current.title}</h2>
                 {current.subtitle && <p className="text-sm text-muted-foreground leading-relaxed">{current.subtitle}</p>}
               </div>
 
@@ -325,7 +329,7 @@ const Survey = () => {
                         type="button"
                         onClick={() => handleRadio(opt.value)}
                         className={`group w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-200 ${
-                          selected ? "bg-foreground text-background scale-[1.01]" : "bg-card hover:scale-[1.005] active:scale-[0.998]"
+                          selected ? "bg-foreground text-background scale-[1.01]" : "bg-muted hover:scale-[1.005] active:scale-[0.998]"
                         }`}
                       >
                         <span className="flex-1 font-medium text-base">{opt.label}</span>
@@ -342,7 +346,7 @@ const Survey = () => {
               {current.type === "number-pair" && (
                 <div className="grid grid-cols-2 gap-3">
                   {current.fields!.map((field) => (
-                    <div key={field.id} className="bg-card rounded-2xl p-4">
+                    <div key={field.id} className="bg-muted rounded-2xl p-4">
                       <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-3">{field.label}</label>
                       <div className="flex items-end gap-1.5">
                         <Input
@@ -371,7 +375,7 @@ const Survey = () => {
                         type="button"
                         onClick={() => handleCheckbox(opt.value, !checked)}
                         className={`group w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-left transition-all duration-200 ${
-                          checked ? "bg-foreground text-background scale-[1.01]" : "bg-card hover:scale-[1.005] active:scale-[0.998]"
+                          checked ? "bg-foreground text-background scale-[1.01]" : "bg-muted hover:scale-[1.005] active:scale-[0.998]"
                         }`}
                       >
                         <span className="flex-1 font-medium text-base">{opt.label}</span>
@@ -390,11 +394,12 @@ const Survey = () => {
         {showCta && (
           <div className="sticky bottom-0 px-5 pb-6 pt-6 bg-gradient-to-t from-background via-background/95 to-transparent">
             <div className="container mx-auto max-w-xl">
+              {/* Pill CTA — full width, pill shape per DESIGN.md §17 */}
               <Button
                 onClick={advance}
                 disabled={!canProceed}
                 size="lg"
-                className="w-full h-16 rounded-2xl text-base font-semibold gap-2 disabled:opacity-20"
+                className="w-full h-14 rounded-full text-base font-medium gap-2 disabled:opacity-20"
               >
                 {current.id === "bmi" ? "Analyse anzeigen" : step === questions.length - 1 ? "Ergebnis anzeigen" : "Weiter"}
                 <ArrowRight className="h-5 w-5" />

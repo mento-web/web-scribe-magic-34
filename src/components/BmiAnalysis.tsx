@@ -98,7 +98,7 @@ const WeightChart = ({ w, peakLoss, visible }: { w: number; peakLoss: number; vi
         </div>
       </div>
 
-      <div className="relative bg-card rounded-2xl overflow-hidden">
+      <div className="relative bg-muted rounded-2xl overflow-hidden">
         {visible && (
           <div
             className="absolute z-10 top-2 pointer-events-none"
@@ -232,10 +232,11 @@ const BmiAnalysis = ({ height, weight, gender, onContinue, onBack }: BmiAnalysis
         <main className="flex-1">
           <div className="container mx-auto px-5 py-10 max-w-xl">
 
+            {/* Big BMI number — editorial serif so it feels confident, not "metric" */}
             <div className="anim-0 mb-8">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Ihr BMI</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-[0.18em] mb-3">Ihr BMI</p>
               <div className="flex items-end gap-2 mb-3">
-                <span className="text-8xl font-bold tracking-tight leading-none tabular-nums">
+                <span className="font-editorial text-8xl md:text-9xl leading-[0.85] tabular-nums">
                   {displayBmi.toFixed(1)}
                 </span>
                 <span className="text-xl font-medium text-muted-foreground mb-3">kg/m²</span>
@@ -260,11 +261,12 @@ const BmiAnalysis = ({ height, weight, gender, onContinue, onBack }: BmiAnalysis
               </div>
             </div>
 
+            {/* "Not eligible" card — uses bg-muted (off-white band) so it reads calm, not alarming */}
             {!showProjections && showDetails && (
-              <div className="bg-card rounded-2xl p-6">
-                <p className="text-base font-semibold mb-2">Ihr Gewicht ist bereits im gesunden Bereich.</p>
+              <div className="bg-muted rounded-[14px] p-6">
+                <p className="text-base font-medium mb-2">Ihr Gewicht ist bereits im gesunden Bereich.</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Leider sind Sie für unsere GLP-1 Behandlung nicht geeignet — diese ist für Personen mit einem BMI über 25 vorgesehen. Wir empfehlen Ihnen, Ihren Hausarzt für eine persönliche Beratung aufzusuchen.
+                  Eine GLP-1 Behandlung ist für Personen mit einem BMI über 25 vorgesehen. Wir empfehlen Ihnen, Ihren Hausarzt für eine persönliche Beratung aufzusuchen.
                 </p>
               </div>
             )}
@@ -299,11 +301,12 @@ const BmiAnalysis = ({ height, weight, gender, onContinue, onBack }: BmiAnalysis
                       </div>
                     ))}
                   </div>
+                  {/* Target-weight card — off-white band with serif number for editorial weight */}
                   {w > 0 && (
-                    <div className="bg-card rounded-2xl p-5 mb-6">
-                      <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Zielgewicht nach 12 Monaten</p>
-                      <p className="text-4xl font-bold">{targetWeight} <span className="text-xl font-medium text-muted-foreground">kg</span></p>
-                      <p className="text-xs text-muted-foreground mt-1">ausgehend von {w} kg Körpergewicht</p>
+                    <div className="bg-muted rounded-[14px] p-6 mb-6">
+                      <p className="text-xs text-muted-foreground uppercase tracking-[0.18em] mb-2">Zielgewicht nach 12 Monaten</p>
+                      <p className="font-editorial text-5xl leading-none">{targetWeight} <span className="text-xl font-medium text-muted-foreground align-top">kg</span></p>
+                      <p className="text-xs text-muted-foreground mt-2">ausgehend von {w} kg Körpergewicht</p>
                     </div>
                   )}
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -318,7 +321,8 @@ const BmiAnalysis = ({ height, weight, gender, onContinue, onBack }: BmiAnalysis
         {showProjections && (
           <div className="sticky bottom-0 px-5 pb-8 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
             <div className="container mx-auto max-w-xl">
-              <Button onClick={onContinue} size="lg" className="w-full h-13 rounded-full text-base font-semibold gap-2">
+              {/* Pill CTA — pill shape per DESIGN.md §17 */}
+              <Button onClick={onContinue} size="lg" className="w-full h-14 rounded-full text-base font-medium gap-2">
                 Zu Ihren Optionen <ArrowRight className="h-4 w-4" />
               </Button>
             </div>

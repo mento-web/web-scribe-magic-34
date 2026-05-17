@@ -1,7 +1,18 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { PageShell } from "@/components/PageShell";
 
+/* ============================================================================
+   Pricing — three-tier plan comparison.
+   Wrapped in PageShell so it shares the slim header + minimal footer with the
+   other secondary pages. Visual language follows DESIGN.md: editorial serif
+   headlines, pastel-tinted plan cards (instead of a single dark "highlighted"
+   plan), and solid black pill CTAs.
+   ========================================================================= */
+
+// Each plan card carries its own pastel tint so the row reads as three
+// editorial product tiles rather than a "pick the middle one" comparison.
+// The middle plan is the recommended one — it gets the deepest tint.
 const plans = [
   {
     name: "Starter",
@@ -12,11 +23,12 @@ const plans = [
       "Online-Fragebogen & ärztliche Beurteilung",
       "Monatliche Medikamentenlieferung",
       "Diskrete Lieferung nach Hause",
-      "Zugang zur SwissVita App",
+      "Zugang zur helvi App",
     ],
     cta: "Jetzt starten",
     href: "/survey/women",
-    highlighted: false,
+    tint: "hsl(var(--tint-peach))",
+    recommended: false,
   },
   {
     name: "Standard",
@@ -32,7 +44,8 @@ const plans = [
     ],
     cta: "Jetzt starten",
     href: "/survey/women",
-    highlighted: true,
+    tint: "hsl(var(--tint-lavender))",
+    recommended: true,
   },
   {
     name: "Premium",
@@ -49,161 +62,112 @@ const plans = [
     ],
     cta: "Jetzt starten",
     href: "/survey/women",
-    highlighted: false,
+    tint: "hsl(var(--tint-moss))",
+    recommended: false,
   },
 ];
 
-const Pricing = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md">
-        <div className="container mx-auto flex items-center justify-between h-16 px-4 gap-4">
-          <Link to="/" className="text-2xl font-bold tracking-tight text-foreground">
-            swissvita
-          </Link>
-          <div className="flex items-center gap-6">
-            <a href="/#bmi-rechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              BMI Rechner
-            </a>
-            <Link to="/proteinrechner" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Proteinrechner
-            </Link>
-            <Link to="/blogs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              Blog
-            </Link>
-            <Link to="/survey/women">
-              <Button className="rounded-full px-6 text-sm font-medium">
-                Jetzt starten
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+const Pricing = () => (
+  <PageShell>
+    {/* === Page header — small label + huge editorial headline === */}
+    <section className="px-4 pt-16 pb-12 md:pt-24 text-center">
+      <div className="container mx-auto max-w-3xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+          Preise
+        </p>
+        <h1 className="font-editorial text-5xl md:text-7xl leading-[0.95] tracking-tight mb-6">
+          Transparent.<br />In Schweizer Franken.
+        </h1>
+        <p className="text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto">
+          Wählen Sie das Paket, das zu Ihren Zielen passt — ohne versteckte
+          Kosten. Jedes Paket beinhaltet ärztliche Betreuung.
+        </p>
+      </div>
+    </section>
 
-      {/* Header */}
-      <section className="pt-32 pb-16 px-4 text-center">
-        <div className="container mx-auto max-w-2xl">
-          <p className="text-sm font-semibold text-accent uppercase tracking-wider mb-3">Preise</p>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-6">
-            Transparente Preise in CHF
-          </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed">
-            Wählen Sie das Paket, das zu Ihren Zielen passt — ohne versteckte Kosten. Alle Pakete beinhalten ärztliche Betreuung.
-          </p>
-        </div>
-      </section>
-
-      {/* Pricing Cards */}
-      <section className="pb-24 px-4">
-        <div className="container mx-auto max-w-5xl">
-          <div className="grid md:grid-cols-3 gap-6 items-start">
-            {plans.map((plan) => (
-              <div
-                key={plan.name}
-                className={`rounded-3xl p-8 flex flex-col gap-6 ${
-                  plan.highlighted
-                    ? "bg-foreground text-background"
-                    : "bg-card"
-                }`}
-              >
-                <div>
-                  <p className={`text-xs font-semibold uppercase tracking-widest mb-4 ${plan.highlighted ? "text-background/60" : "text-muted-foreground"}`}>
+    {/* === Plan cards — three pastel-tinted tiles, middle one marked recommended === */}
+    <section className="px-4 mt-8">
+      <div className="container mx-auto max-w-5xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className="rounded-[14px] p-8 flex flex-col gap-6"
+              style={{ background: plan.tint }}
+            >
+              {/* Header: name + recommended tag + price */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/70">
                     {plan.name}
                   </p>
-                  <div className="flex items-end gap-1 mb-3">
-                    <span className="text-5xl font-bold tracking-tight">CHF {plan.price}</span>
-                    <span className={`text-sm mb-2 ${plan.highlighted ? "text-background/60" : "text-muted-foreground"}`}>
-                      {plan.period}
+                  {plan.recommended && (
+                    <span className="text-[10px] font-semibold uppercase tracking-wider bg-foreground text-background rounded-full px-2 py-0.5">
+                      Empfohlen
                     </span>
-                  </div>
-                  <p className={`text-sm leading-relaxed ${plan.highlighted ? "text-background/70" : "text-muted-foreground"}`}>
-                    {plan.description}
-                  </p>
+                  )}
                 </div>
-
-                <ul className="space-y-3 flex-1">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 text-sm">
-                      <Check className={`h-4 w-4 mt-0.5 shrink-0 ${plan.highlighted ? "text-background" : "text-accent"}`} />
-                      <span className={plan.highlighted ? "text-background/90" : ""}>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link to={plan.href}>
-                  <Button
-                    className={`rounded-full w-full font-semibold gap-2 ${
-                      plan.highlighted
-                        ? "bg-background text-foreground hover:bg-background/90"
-                        : ""
-                    }`}
-                    variant={plan.highlighted ? "secondary" : "default"}
-                  >
-                    {plan.cta} <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </Link>
+                <div className="flex items-end gap-1.5 mb-3">
+                  <span className="font-editorial text-5xl md:text-6xl leading-none">
+                    CHF&nbsp;{plan.price}
+                  </span>
+                  <span className="text-sm text-foreground/60 mb-2">{plan.period}</span>
+                </div>
+                <p className="text-sm leading-relaxed text-foreground/75">
+                  {plan.description}
+                </p>
               </div>
-            ))}
-          </div>
 
-          {/* Fine print */}
-          <p className="text-center text-xs text-muted-foreground mt-10 max-w-lg mx-auto">
-            Alle Preise verstehen sich inklusive Mehrwertsteuer. Die Kosten für Medikamente sind im Paketpreis enthalten. Monatlich kündbar.
-          </p>
+              {/* Feature list — black check + small DM Sans line */}
+              <ul className="space-y-3 flex-1">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 mt-0.5 shrink-0" strokeWidth={2} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Pill CTA — solid black on tinted background */}
+              <Link
+                to={plan.href}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity"
+              >
+                {plan.cta} <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          ))}
         </div>
-      </section>
 
-      {/* FAQ teaser */}
-      <section className="py-20 px-4 bg-card">
-        <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Haben Sie noch Fragen?</h2>
-          <p className="text-muted-foreground text-lg mb-8">
-            In unserem FAQ finden Sie Antworten auf die häufigsten Fragen zu Behandlung, Kosten und Ablauf.
+        {/* Fine print under the plan grid */}
+        <p className="text-center text-xs text-muted-foreground mt-10 max-w-lg mx-auto leading-relaxed">
+          Alle Preise verstehen sich inklusive Mehrwertsteuer. Medikamente sind
+          im Paketpreis enthalten. Monatlich kündbar.
+        </p>
+      </div>
+    </section>
+
+    {/* === FAQ teaser — off-white band with serif headline === */}
+    <section className="mt-20 md:mt-28 px-4">
+      <div className="container mx-auto max-w-3xl">
+        <div className="rounded-[14px] bg-muted py-16 px-8 text-center">
+          <h2 className="font-editorial text-4xl md:text-5xl leading-[1] mb-4">
+            Noch Fragen?
+          </h2>
+          <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+            In unserem FAQ finden Sie Antworten auf die häufigsten Fragen zu
+            Behandlung, Kosten und Ablauf.
           </p>
-          <Link to="/faq">
-            <Button variant="outline" className="rounded-full px-8 font-semibold gap-2">
-              Zum FAQ <ArrowRight className="h-4 w-4" />
-            </Button>
+          <Link
+            to="/faq"
+            className="inline-flex items-center gap-2 rounded-full border border-foreground px-6 py-3 text-sm font-medium hover:bg-foreground hover:text-background transition-colors"
+          >
+            Zum FAQ <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t py-12 px-4">
-        <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-            <div>
-              <p className="text-xl font-bold">swissvita</p>
-              <p className="text-sm text-muted-foreground mt-2 max-w-xs">
-                Ärztlich begleitete Gewichtstherapie in der Schweiz.
-              </p>
-            </div>
-            <div className="flex flex-col gap-2 text-sm">
-              <Link to="/faq" className="text-muted-foreground hover:text-foreground transition-colors">
-                FAQ
-              </Link>
-              <Link to="/proteinrechner" className="text-muted-foreground hover:text-foreground transition-colors">
-                Proteinrechner
-              </Link>
-              <Link to="/blogs" className="text-muted-foreground hover:text-foreground transition-colors">
-                Blog
-              </Link>
-              <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                Preise
-              </Link>
-            </div>
-            <div className="text-sm text-muted-foreground space-y-2 md:text-right max-w-md">
-              <p>© {new Date().getFullYear()} SwissVita. Alle Rechte vorbehalten.</p>
-              <p className="text-xs">
-                Dies ist kein Ersatz für eine ärztliche Beratung. Alle Behandlungen erfolgen unter ärztlicher Aufsicht gemäss Schweizer Heilmittelgesetz (HMG).
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
-};
+      </div>
+    </section>
+  </PageShell>
+);
 
 export default Pricing;
