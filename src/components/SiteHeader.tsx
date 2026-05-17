@@ -73,7 +73,7 @@ const ResourcesDropdown = () => {
             className="min-w-[220px] bg-background border border-border rounded-[14px] py-2"
           >
             <Link
-              to="/#bmi-rechner"
+              to="/bmi-rechner"
               role="menuitem"
               onClick={() => setOpen(false)}
               className="block px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"

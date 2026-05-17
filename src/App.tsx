@@ -17,6 +17,7 @@ import AGB from "./pages/AGB.tsx";
 import Datenschutz from "./pages/Datenschutz.tsx";
 import Impressum from "./pages/Impressum.tsx";
 import Proteinrechner from "./pages/Proteinrechner.tsx";
+import BmiRechner from "./pages/BmiRechner.tsx";
 import Anmelden from "./pages/Anmelden.tsx";
 import Konto from "./pages/Konto.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -75,6 +76,7 @@ const App = () => (
             <Route path="/faq" element={<FAQ />} />
             <Route path="/pricing" element={<Pricing />} />
             {/* === Resources / tools === */}
+            <Route path="/bmi-rechner" element={<BmiRechner />} />
             <Route path="/proteinrechner" element={<Proteinrechner />} />
             {/* === Auth surfaces === */}
             <Route path="/anmelden" element={<Anmelden />} />
