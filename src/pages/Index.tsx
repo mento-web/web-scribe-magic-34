@@ -480,55 +480,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Single product showcase */}
-      <section className="mt-20 md:mt-28 px-4">
-        <div className="container mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
-            Gewichtsverlust
-          </p>
-          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-10 max-w-xl">
-            Verschreibungspflichtige<br />Behandlung. Klinisch geprüft.
-          </h2>
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 rounded-[14px] overflow-hidden"
-            style={{ background: "hsl(var(--tint-taupe))" }}
-          >
-            <div className="relative aspect-[5/4] md:aspect-auto min-h-[320px]">
-              <img
-                src={heroProduct}
-                alt="Semaglutid Injektionspen"
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8 md:p-12 flex flex-col justify-center">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-foreground/60 mb-3">
-                Auf Lager
-              </p>
-              <h3 className="font-editorial text-4xl md:text-5xl mb-2">Semaglutid</h3>
-              <p className="text-sm text-foreground/70 mb-8">
-                Wöchentliche Injektion · ärztlich verschrieben
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/survey/women">
-                  <PillButton variant="solid">
-                    Jetzt starten <ArrowRight className="h-4 w-4" />
-                  </PillButton>
-                </Link>
-                <Link to="/faq">
-                  <PillButton variant="outline">Mehr erfahren</PillButton>
-                </Link>
-              </div>
-              <a
-                href="#sicherheit"
-                className="mt-8 text-xs text-foreground/50 underline underline-offset-4 self-start"
-              >
-                Wichtige Sicherheitsinformationen
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* BMI Rechner */}
       <section id="bmi-rechner" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
