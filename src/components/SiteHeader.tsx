@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronDown, User } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 /* ============================================================================
    SiteHeader — shared sticky nav used on the landing page and every content
@@ -13,7 +14,9 @@ import { ChevronDown, User } from "lucide-react";
            • Wie es funktioniert  — anchor on the landing page
            • Preise         — /pricing
            • FAQ            — /faq
-     3.  Right: small account icon (User) routing into the survey funnel
+     3.  Right: small auth-aware affordance:
+           • signed out → generic User icon linking to /anmelden
+           • signed in  → small initial-on-circle linking to /konto
 
    Why a single shared component:
      - The two former inline Header copies were drifting in subtle ways
@@ -92,6 +95,43 @@ const ResourcesDropdown = () => {
   );
 };
 
+// Right-hand affordance. Two visual states, both styled as a small circle.
+//   • signed out → generic lucide User icon, links to /anmelden
+//   • signed in  → user's first initial in the editorial serif, links to /konto
+// Initial source mirrors the logic on the Konto page (user_metadata first,
+// email local-part as fallback).
+const AccountAffordance = () => {
+  const { user } = useAuth();
+
+  if (!user) {
+    return (
+      <Link
+        to="/anmelden"
+        aria-label="Anmelden"
+        className="rounded-full p-2 hover:bg-muted transition-colors"
+      >
+        <User className="h-5 w-5" />
+      </Link>
+    );
+  }
+
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const fn = (meta.first_name as string | undefined) ?? undefined;
+  const full = (meta.full_name as string | undefined) ?? undefined;
+  const fromEmail = user.email?.split("@")[0] ?? "";
+  const initial = (fn ?? full ?? fromEmail).charAt(0).toUpperCase() || "?";
+
+  return (
+    <Link
+      to="/konto"
+      aria-label="Mein Konto"
+      className="h-9 w-9 rounded-full bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-opacity"
+    >
+      <span className="font-editorial text-lg leading-none">{initial}</span>
+    </Link>
+  );
+};
+
 // Single sticky white nav, identical on every page.
 export const SiteHeader = () => (
   <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
@@ -124,14 +164,8 @@ export const SiteHeader = () => (
         </Link>
       </nav>
 
-      {/* === Right: small account / start icon === */}
-      <Link
-        to="/survey/women"
-        aria-label="Konto"
-        className="rounded-full p-2 hover:bg-muted transition-colors"
-      >
-        <User className="h-5 w-5" />
-      </Link>
+      {/* === Right: auth-aware account affordance === */}
+      <AccountAffordance />
     </div>
   </header>
 );

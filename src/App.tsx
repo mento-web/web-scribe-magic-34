@@ -17,7 +17,11 @@ import AGB from "./pages/AGB.tsx";
 import Datenschutz from "./pages/Datenschutz.tsx";
 import Impressum from "./pages/Impressum.tsx";
 import Proteinrechner from "./pages/Proteinrechner.tsx";
+import Anmelden from "./pages/Anmelden.tsx";
+import Konto from "./pages/Konto.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/lib/auth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -60,25 +64,39 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <ScrollToHash />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/survey/:gender" element={<Survey />} />
-          <Route path="/analyse" element={<Analyse />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/pricing" element={<Pricing />} />
-          {/* === Resources / tools === */}
-          <Route path="/proteinrechner" element={<Proteinrechner />} />
-          {/* === Secondary content pages (footer links) === */}
-          <Route path="/ueber-uns" element={<UeberUns />} />
-          <Route path="/kontakt" element={<Kontakt />} />
-          <Route path="/karriere" element={<Karriere />} />
-          <Route path="/rueckgabe" element={<Rueckgabe />} />
-          <Route path="/agb" element={<AGB />} />
-          <Route path="/datenschutz" element={<Datenschutz />} />
-          <Route path="/impressum" element={<Impressum />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {/* AuthProvider must live inside BrowserRouter because some auth
+            consumers (ProtectedRoute) use useLocation. */}
+        <AuthProvider>
+          <ScrollToHash />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/survey/:gender" element={<Survey />} />
+            <Route path="/analyse" element={<Analyse />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/pricing" element={<Pricing />} />
+            {/* === Resources / tools === */}
+            <Route path="/proteinrechner" element={<Proteinrechner />} />
+            {/* === Auth surfaces === */}
+            <Route path="/anmelden" element={<Anmelden />} />
+            <Route
+              path="/konto"
+              element={
+                <ProtectedRoute>
+                  <Konto />
+                </ProtectedRoute>
+              }
+            />
+            {/* === Secondary content pages (footer links) === */}
+            <Route path="/ueber-uns" element={<UeberUns />} />
+            <Route path="/kontakt" element={<Kontakt />} />
+            <Route path="/karriere" element={<Karriere />} />
+            <Route path="/rueckgabe" element={<Rueckgabe />} />
+            <Route path="/agb" element={<AGB />} />
+            <Route path="/datenschutz" element={<Datenschutz />} />
+            <Route path="/impressum" element={<Impressum />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
