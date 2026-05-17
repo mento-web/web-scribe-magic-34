@@ -8,6 +8,13 @@ import Survey from "./pages/Survey.tsx";
 import Analyse from "./pages/Analyse.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import Pricing from "./pages/Pricing.tsx";
+import UeberUns from "./pages/UeberUns.tsx";
+import Kontakt from "./pages/Kontakt.tsx";
+import Karriere from "./pages/Karriere.tsx";
+import Rueckgabe from "./pages/Rueckgabe.tsx";
+import AGB from "./pages/AGB.tsx";
+import Datenschutz from "./pages/Datenschutz.tsx";
+import Impressum from "./pages/Impressum.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -24,6 +31,14 @@ const App = () => (
           <Route path="/analyse" element={<Analyse />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/pricing" element={<Pricing />} />
+          {/* === Secondary content pages (footer links) === */}
+          <Route path="/ueber-uns" element={<UeberUns />} />
+          <Route path="/kontakt" element={<Kontakt />} />
+          <Route path="/karriere" element={<Karriere />} />
+          <Route path="/rueckgabe" element={<Rueckgabe />} />
+          <Route path="/agb" element={<AGB />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
+          <Route path="/impressum" element={<Impressum />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

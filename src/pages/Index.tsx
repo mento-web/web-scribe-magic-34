@@ -855,9 +855,9 @@ const Index = () => {
               {
                 title: "Über helvi",
                 links: [
-                  ["Über uns", "#"],
-                  ["Kontakt", "#"],
-                  ["Karriere", "#"],
+                  ["Über uns", "/ueber-uns"],
+                  ["Kontakt", "/kontakt"],
+                  ["Karriere", "/karriere"],
                 ],
               },
               {
@@ -865,22 +865,19 @@ const Index = () => {
                 links: [
                   ["FAQ", "/faq"],
                   ["Preise", "/pricing"],
-                  ["Rückgabe", "#"],
+                  ["Rückgabe", "/rueckgabe"],
                 ],
               },
               {
                 title: "Tools",
-                links: [
-                  ["BMI-Rechner", "#bmi-rechner"],
-                  ["Versicherungs-Check", "/survey/women"],
-                ],
+                links: [["BMI-Rechner", "/#bmi-rechner"]],
               },
               {
                 title: "Legal",
                 links: [
-                  ["AGB", "#"],
-                  ["Datenschutz", "#"],
-                  ["Impressum", "#"],
+                  ["AGB", "/agb"],
+                  ["Datenschutz", "/datenschutz"],
+                  ["Impressum", "/impressum"],
                 ],
               },
             ].map((col) => (
