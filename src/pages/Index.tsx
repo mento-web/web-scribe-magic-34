@@ -40,7 +40,7 @@ import djKhaledHero from "@/assets/dj-khaled-hero.png";
    Section order (top to bottom of what the user sees):
      1.  Utility bar          — thin royal-blue strip with "resume visit" link
      2.  Header               — slim sticky nav with helvi wordmark + account
-     3.  Hero                 — huge "Gesünder mit helvi." + trust list
+      3.  Hero                 — huge "Gesünder werden mit helvi." + trust list
      4.  Twin hero cards      — lavender GLP-1 pens + DJ Khaled portrait
      5.  Secondary cards      — 3 small tinted CTAs under the twin cards
      6.  Lifestyle band       — full-bleed "20 % verlieren" with glass card
