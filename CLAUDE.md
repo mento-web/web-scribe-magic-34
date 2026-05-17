@@ -2,6 +2,10 @@
 
 > This file is auto-loaded by Claude Code into every conversation in this repo.
 > Keep it short, durable, and focused on what's easy to get wrong.
+>
+> **See also: [DESIGN.md](./DESIGN.md)** — the design philosophy
+> (Ro-inspired editorial telehealth aesthetic), the palette and typography
+> rules, and the section-by-section design intent for `src/pages/Index.tsx`.
 
 ---
 
