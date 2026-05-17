@@ -6,7 +6,6 @@ import {
   Pill,
   Stethoscope,
   Globe,
-  User,
   X,
   Leaf,
   MessageCircle,
@@ -24,6 +23,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { SiteHeader } from "@/components/SiteHeader";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
@@ -175,51 +175,8 @@ const UtilityBar = () => {
   );
 };
 
-// Sticky white nav. Helvi wordmark left, flat nav links center, account icon
-// right. Intentionally no mega-menu — helvi only offers one product, so the
-// nav stays minimal and editorial.
-const Header = () => (
-  <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
-    <div className="container mx-auto flex items-center justify-between h-16 px-4">
-      <Link to="/" className="text-2xl font-bold tracking-tight lowercase">
-        helvi
-      </Link>
-      <nav className="hidden md:flex items-center gap-10">
-        <a
-          href="#bmi-rechner"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          BMI Rechner
-        </a>
-        <a
-          href="#so-funktioniert"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Wie es funktioniert
-        </a>
-        <Link
-          to="/pricing"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Preise
-        </Link>
-        <Link
-          to="/faq"
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          FAQ
-        </Link>
-      </nav>
-      <Link
-        to="/survey/women"
-        aria-label="Konto"
-        className="rounded-full p-2 hover:bg-muted transition-colors"
-      >
-        <User className="h-5 w-5" />
-      </Link>
-    </div>
-  </header>
-);
+// (The sticky nav lives in src/components/SiteHeader.tsx — same instance is
+// used on every page so the Ressourcen dropdown only has to exist once.)
 
 // Right column of the hero. Four icon + text bullets that build trust fast:
 // who uses helvi, who prescribes, pricing positioning, and onboarding ease.
@@ -381,8 +338,8 @@ const Index = () => {
       {/* === 1. Utility bar — royal-blue strip at the very top === */}
       <UtilityBar />
 
-      {/* === 2. Header — sticky white nav with helvi wordmark === */}
-      <Header />
+      {/* === 2. Header — shared SiteHeader (wordmark + Ressourcen dropdown + nav) === */}
+      <SiteHeader />
 
       {/* === 3. Hero — huge editorial headline on the left, trust list on the right === */}
       <section className="px-4 pt-16 pb-12 md:pt-24 md:pb-16">
