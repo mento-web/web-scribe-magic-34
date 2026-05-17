@@ -35,7 +35,7 @@ const AGB = () => (
           {
             num: "1",
             title: "Geltungsbereich",
-            body: "Diese Allgemeinen Geschäftsbedingungen (AGB) regeln das Verhältnis zwischen der Helvi AG (nachfolgend „helvi") und den Nutzerinnen und Nutzern der Plattform helvi.ch sowie der zugehörigen Dienste.",
+            body: "Diese Allgemeinen Geschäftsbedingungen (AGB) regeln das Verhältnis zwischen der Helvi AG (nachfolgend „helvi“) und den Nutzerinnen und Nutzern der Plattform helvi.ch sowie der zugehörigen Dienste.",
           },
           {
             num: "2",
