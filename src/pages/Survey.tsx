@@ -1,9 +1,14 @@
 import { useState, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check } from "lucide-react";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BmiAnalysis from "@/components/BmiAnalysis";
+
+// Reusable email validator — matches the schema used in Anmelden.tsx so error
+// behavior across the site stays consistent.
+const emailSchema = z.string().email();
 
 interface Question {
   id: string;
@@ -86,6 +91,7 @@ const SURVEY_STYLES = `
 
 const Survey = () => {
   const { gender } = useParams<{ gender: string }>();
+  const navigate = useNavigate();
   const questions = sharedQuestions;
 
   const [step, setStep] = useState(0);
@@ -93,6 +99,12 @@ const Survey = () => {
   const [showResult, setShowResult] = useState(false);
   const [showBmiCard, setShowBmiCard] = useState(false);
   const [animKey, setAnimKey] = useState(0);
+
+  // Email capture shown on the `eligible` result screen. Only relevant when
+  // the user qualifies — borderline / low-bmi paths skip this entirely.
+  const [email, setEmail] = useState("");
+  const [emailTouched, setEmailTouched] = useState(false);
+  const emailValid = emailSchema.safeParse(email).success;
 
   const progress = (step / questions.length) * 100;
   const current = questions[step];
@@ -172,6 +184,7 @@ const Survey = () => {
 
   const resetSurvey = () => {
     setStep(0); setAnswers({}); setShowResult(false); setShowBmiCard(false); setAnimKey(0);
+    setEmail(""); setEmailTouched(false);
   };
 
   // ── BMI interstitial ──
@@ -196,8 +209,8 @@ const Survey = () => {
         icon: <CheckCircle className="h-8 w-8" strokeWidth={1.5} />,
         iconBg: "bg-emerald-500/10", iconColor: "text-emerald-500",
         badge: "Geeignet", badgeBg: "bg-emerald-500/10 text-emerald-600",
-        title: "Sie könnten geeignet sein.",
-        body: "Basierend auf Ihren Angaben könnten Sie für eine ärztlich begleitete GLP-1 Therapie in Frage kommen. Ein Schweizer Arzt prüft Ihre Angaben und meldet sich bei Ihnen.",
+        title: "Sie sind für eine Behandlung geeignet!",
+        body: "Basierend auf Ihren Angaben kommen Sie für eine ärztlich begleitete GLP-1 Therapie in Frage. Buchen Sie jetzt Ihren Termin — ein Schweizer Arzt prüft Ihre Angaben im Gespräch.",
       },
       borderline: {
         icon: <AlertTriangle className="h-8 w-8" strokeWidth={1.5} />,
@@ -250,13 +263,61 @@ const Survey = () => {
               </div>
             )}
 
-            {/* Primary "back home" pill + ghost "redo survey" link */}
+            {/* === Primary CTA block ===
+                Eligible users get an email-capture card + "Behandlung buchen"
+                pill that forwards the email to /termin via router state.
+                Borderline / low-bmi keep the original "Zur Startseite" exit. */}
             <div className="anim-2 flex flex-col gap-3">
-              <Link to="/">
-                <Button size="lg" className="w-full rounded-full text-base font-medium gap-2">
-                  Zur Startseite <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+              {result === "eligible" ? (
+                <>
+                  {/* Email input — matches the Anmelden.tsx pattern (uppercase
+                      mini-label, bg-muted rounded-2xl card, borderless input). */}
+                  <div className="bg-muted rounded-2xl p-4 text-left">
+                    <label
+                      htmlFor="booking-email"
+                      className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground block mb-2"
+                    >
+                      E-Mail
+                    </label>
+                    <input
+                      id="booking-email"
+                      type="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onBlur={() => setEmailTouched(true)}
+                      placeholder="name@beispiel.ch"
+                      className="w-full h-10 text-base bg-transparent border-0 outline-none focus:ring-0 placeholder:text-muted-foreground/30"
+                    />
+                    {emailTouched && !emailValid && email.length > 0 && (
+                      <p className="text-xs text-destructive mt-1">
+                        Bitte geben Sie eine gültige E-Mail-Adresse ein.
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Primary CTA — disabled until the email validates.
+                      navigate(..., { state }) keeps the email out of the URL. */}
+                  <Button
+                    size="lg"
+                    disabled={!emailValid}
+                    onClick={() =>
+                      navigate("/termin", {
+                        state: { email, eligibility: "eligible" },
+                      })
+                    }
+                    className="w-full rounded-full text-base font-medium gap-2"
+                  >
+                    Behandlung buchen <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <Link to="/">
+                  <Button size="lg" className="w-full rounded-full text-base font-medium gap-2">
+                    Zur Startseite <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+              )}
               <button onClick={resetSurvey} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 Fragebogen wiederholen
               </button>

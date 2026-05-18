@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Survey from "./pages/Survey.tsx";
+import Termin from "./pages/Termin.tsx";
 import Analyse from "./pages/Analyse.tsx";
 import FAQ from "./pages/FAQ.tsx";
 import Pricing from "./pages/Pricing.tsx";
@@ -72,6 +73,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/survey/:gender" element={<Survey />} />
+            {/* Booking page — post-survey, Cal.com Atoms behind it */}
+            <Route path="/termin" element={<Termin />} />
             <Route path="/analyse" element={<Analyse />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/pricing" element={<Pricing />} />
