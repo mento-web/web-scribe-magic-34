@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchSlots, bookSlot, type Slot } from "@/lib/booking";
+import { updateLeadBooking } from "@/lib/leads";
 
 /* ============================================================================
    Termin.tsx — Cal.com-backed booking page.
@@ -66,12 +67,22 @@ const formatLongDate = (iso: string): string => {
 /* === The page =========================================================== */
 
 const Termin = () => {
-  // Pull the email forwarded by Survey.tsx via `navigate(..., { state: { email } })`.
-  // If a user lands here directly (no state), we bounce them home — booking
-  // without a completed survey is not a supported path.
+  // Pull the email + leads handle forwarded by Survey.tsx via
+  // `navigate(..., { state: { email, leadId, leadToken } })`. If a user lands
+  // here directly (no state), we bounce them home — booking without a
+  // completed survey is not a supported path. leadId / leadToken may be
+  // missing if the Supabase INSERT in Survey.tsx failed; in that case we
+  // skip the post-booking UPDATE entirely (best-effort lead persistence).
   const location = useLocation();
   const navigate = useNavigate();
-  const email = (location.state as { email?: string } | null)?.email;
+  const navState = location.state as {
+    email?: string;
+    leadId?: string;
+    leadToken?: string;
+  } | null;
+  const email = navState?.email;
+  const leadId = navState?.leadId;
+  const leadToken = navState?.leadToken;
 
   useEffect(() => {
     if (!email) navigate("/", { replace: true });
@@ -112,15 +123,40 @@ const Termin = () => {
   });
 
   // Confirms the booking through the lib/booking seam. The lib decides
-  // whether the call goes to the stub or to Cal.com Atoms.
+  // whether the call goes to the stub or to Cal.com Atoms. After the
+  // booking succeeds, we ALSO update the leads row with the slot +
+  // cal_booking_id. That UPDATE is best-effort: Cal.com is the source of
+  // truth for the actual appointment, so a failed leads write must not
+  // block the success screen.
   const handleConfirm = async () => {
     if (!email || !selectedSlot) return;
     setIsBooking(true);
     setBookingError(null);
+
     const result = await bookSlot(email, selectedSlot.startIso);
+    if (!result.ok) {
+      setIsBooking(false);
+      setBookingError(result.error);
+      return;
+    }
+
+    // Fire-and-don't-block leads UPDATE. Skipped entirely if we don't have a
+    // lead handle (e.g. the Supabase INSERT in Survey.tsx silently failed).
+    if (leadId && leadToken) {
+      try {
+        await updateLeadBooking({
+          id: leadId,
+          leadToken,
+          slotIso: selectedSlot.startIso,
+          calBookingId: result.bookingId,
+        });
+      } catch (err) {
+        console.warn("updateLeadBooking failed", err);
+      }
+    }
+
     setIsBooking(false);
-    if (result.ok) setBookingId(result.bookingId);
-    else setBookingError(result.error);
+    setBookingId(result.bookingId);
   };
 
   // If the email was missing the effect above will redirect — render

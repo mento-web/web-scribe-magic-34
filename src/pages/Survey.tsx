@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check, Loader2 } from "lucide-react";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BmiAnalysis from "@/components/BmiAnalysis";
+import { createLead, type Gender } from "@/lib/leads";
 
 // Reusable email validator — matches the schema used in Anmelden.tsx so error
 // behavior across the site stays consistent.
@@ -106,6 +107,13 @@ const Survey = () => {
   const [emailTouched, setEmailTouched] = useState(false);
   const emailValid = emailSchema.safeParse(email).success;
 
+  // Submission state for the "Behandlung buchen" CTA. We INSERT a leads row
+  // before navigating to /termin; while that's in flight the button shows a
+  // spinner. Failures surface inline and DON'T block navigation — the user
+  // can still book even if our lead capture had a hiccup.
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const progress = (step / questions.length) * 100;
   const current = questions[step];
 
@@ -185,6 +193,49 @@ const Survey = () => {
   const resetSurvey = () => {
     setStep(0); setAnswers({}); setShowResult(false); setShowBmiCard(false); setAnimKey(0);
     setEmail(""); setEmailTouched(false);
+    setIsSubmitting(false); setSubmitError(null);
+  };
+
+  /* === handleBookingClick ==================================================
+     Survey eligible CTA — INSERTs a leads row, then forwards id + token via
+     router state to /termin so the booking page can later UPDATE that row
+     with the chosen slot. Inline error on failure; lead persistence is best
+     effort, so we still navigate even if Supabase fails (rare). */
+  const handleBookingClick = async () => {
+    if (!emailValid || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    // Pull the height/weight the user typed in the BMI step. They're guaranteed
+    // to be present when eligibility === "eligible" (the calc itself depends
+    // on them), but we still guard for the missing case.
+    const bmiData = answers["bmi"] as Record<string, string> | undefined;
+    const heightCm = bmiData?.height ? Number(bmiData.height) : null;
+    const weightKg = bmiData?.weight ? Number(bmiData.weight) : null;
+    const bmi =
+      heightCm && weightKg
+        ? Number((weightKg / Math.pow(heightCm / 100, 2)).toFixed(2))
+        : null;
+
+    try {
+      const { id, leadToken } = await createLead({
+        email,
+        gender: (gender === "men" ? "men" : "women") as Gender,
+        eligibility: "eligible",
+        heightCm,
+        weightKg,
+        bmi,
+      });
+      navigate("/termin", {
+        state: { email, leadId: id, leadToken, eligibility: "eligible" },
+      });
+    } catch (err) {
+      // Don't block the funnel — surface the error but still let the user
+      // continue without lead persistence by navigating without a leadId.
+      console.warn("createLead failed", err);
+      setSubmitError("Wir konnten Ihre Anfrage nicht speichern. Sie können trotzdem fortfahren.");
+      setIsSubmitting(false);
+    }
   };
 
   // ── BMI interstitial ──
@@ -296,20 +347,28 @@ const Survey = () => {
                     )}
                   </div>
 
-                  {/* Primary CTA — disabled until the email validates.
-                      navigate(..., { state }) keeps the email out of the URL. */}
+                  {/* Primary CTA — disabled until the email validates, spinner
+                      while the leads INSERT is in flight. Inline error below
+                      if Supabase rejects but does NOT block the next step. */}
                   <Button
                     size="lg"
-                    disabled={!emailValid}
-                    onClick={() =>
-                      navigate("/termin", {
-                        state: { email, eligibility: "eligible" },
-                      })
-                    }
+                    disabled={!emailValid || isSubmitting}
+                    onClick={handleBookingClick}
                     className="w-full rounded-full text-base font-medium gap-2"
                   >
-                    Behandlung buchen <ArrowRight className="h-4 w-4" />
+                    {isSubmitting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        Behandlung buchen <ArrowRight className="h-4 w-4" />
+                      </>
+                    )}
                   </Button>
+                  {submitError && (
+                    <p className="text-xs text-destructive text-center" role="alert">
+                      {submitError}
+                    </p>
+                  )}
                 </>
               ) : (
                 <Link to="/">
