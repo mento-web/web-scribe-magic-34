@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
 import { supabase } from "@/integrations/supabase/client";
+import { EVENTS, track } from "@/lib/tracking";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -96,12 +97,16 @@ const Anmelden = () => {
   const onSubmit = async (values: LoginInput) => {
     setIsLoading(true);
     setAuthError(null);
+    void track(EVENTS.sign_in_attempted, { provider: "password" });
     const { error } = await supabase.auth.signInWithPassword(values);
     setIsLoading(false);
     if (error) {
       setAuthError("Anmeldedaten ungültig. Bitte versuchen Sie es erneut.");
       return;
     }
+    // sign_in_succeeded fires from src/lib/auth.tsx on the SIGNED_IN auth
+    // state change — captured there so OAuth callbacks (which navigate away)
+    // also get it.
     navigate(next, { replace: true });
   };
 
@@ -110,6 +115,7 @@ const Anmelden = () => {
   // onAuthStateChange picks it up. We point redirectTo at /konto (or next).
   const signInWithProvider = async (provider: "google" | "apple") => {
     setAuthError(null);
+    void track(EVENTS.sign_in_attempted, { provider });
     await supabase.auth.signInWithOAuth({
       provider,
       options: { redirectTo: `${window.location.origin}${next}` },

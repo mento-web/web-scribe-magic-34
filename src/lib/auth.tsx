@@ -8,6 +8,10 @@ import {
 } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { EVENTS, setProfileId, track } from "@/lib/tracking";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sb = supabase as any;
 
 /* ============================================================================
    Auth context + useAuth hook — single source of truth for "who is signed in"
@@ -53,14 +57,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     supabase.auth.getSession().then(({ data }) => {
       if (!mounted) return;
       setSession(data.session);
+      // Keep tracking lib in sync so events fired before the
+      // onAuthStateChange subscription fires still get a profile_id stamp.
+      setProfileId(data.session?.user.id ?? null);
       setIsLoading(false);
     });
 
     // 2. Keep the session reactive: any sign-in, sign-out, or token refresh
-    //    flips state through here.
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, next) => {
+    //    flips state through here. Also where tracking learns about identity
+    //    changes and where the lead↔profile linking RPC is invoked.
+    const { data: sub } = supabase.auth.onAuthStateChange((event, next) => {
       setSession(next);
       setIsLoading(false);
+      setProfileId(next?.user.id ?? null);
+
+      // Fire identity events. INITIAL_SESSION and TOKEN_REFRESHED don't
+      // count as real sign-in moments — they fire on every page load when a
+      // session already exists.
+      if (event === "SIGNED_IN" && next?.user) {
+        void track(EVENTS.sign_in_succeeded, {
+          provider: next.user.app_metadata?.provider ?? null,
+        });
+        // Best-effort: link any pre-signup leads row that shares this
+        // user's email to the freshly created profile. Idempotent.
+        if (next.user.email) {
+          void sb.rpc("link_lead_to_profile", { p_email: next.user.email });
+        }
+      } else if (event === "SIGNED_OUT") {
+        void track(EVENTS.sign_out, {});
+      }
     });
 
     return () => {

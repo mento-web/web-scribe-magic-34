@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, Shield, Check, Loader2 } from "lucide-react";
 import { z } from "zod";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BmiAnalysis from "@/components/BmiAnalysis";
 import { createLead, type Gender } from "@/lib/leads";
+import { EVENTS, track, upsertSurveyResponse } from "@/lib/tracking";
 
 // Reusable email validator — matches the schema used in Anmelden.tsx so error
 // behavior across the site stays consistent.
@@ -117,6 +118,41 @@ const Survey = () => {
   const progress = (step / questions.length) * 100;
   const current = questions[step];
 
+  // Fire survey_started once per mount. gender comes from the route param so
+  // we can split the funnel by entry path.
+  useEffect(() => {
+    void track(EVENTS.survey_started, { gender: gender ?? null });
+  }, [gender]);
+
+  // Fire eligibility_result the moment we transition into the result screen.
+  // Computing result inline here (vs only inside the result branch below)
+  // keeps the hook at the top of the component — rules-of-hooks compliant.
+  useEffect(() => {
+    if (!showResult) return;
+    const bmiData = answers["bmi"] as Record<string, string> | undefined;
+    let result: "eligible" | "borderline" | "low-bmi" = "borderline";
+    if (bmiData) {
+      const h = Number(bmiData.height) / 100;
+      const w = Number(bmiData.weight);
+      if (h > 0 && w > 0) {
+        const bmi = w / (h * h);
+        if (bmi < 25) result = "low-bmi";
+        else if (bmi >= 30) result = "eligible";
+        else result = "borderline";
+      }
+    }
+    void track(EVENTS.eligibility_result, { result, gender: gender ?? null });
+  }, [showResult, answers, gender]);
+
+  // Persist the current question's answer to survey_responses AND fire a
+  // survey_question_answered event. Called from handleRadio (radio auto-
+  // advances on click) and from advance() (number-pair + checkbox advance
+  // via the Weiter button).
+  const persistAnswer = (questionKey: string, answer: unknown) => {
+    void upsertSurveyResponse(questionKey, answer);
+    void track(EVENTS.survey_question_answered, { question_key: questionKey });
+  };
+
   const canProceed = useMemo(() => {
     const ans = answers[current.id];
     if (current.type === "number-pair") {
@@ -136,12 +172,19 @@ const Survey = () => {
   };
 
   const advance = () => {
+    // Persist this question's answer just before leaving it. Reads from
+    // `answers` because the Weiter button is only reachable after the user
+    // has finished editing this step (number-pair, checkbox).
+    persistAnswer(current.id, answers[current.id]);
     if (current.id === "bmi") { setShowBmiCard(true); return; }
     doAdvance();
   };
 
   const handleRadio = (value: string) => {
     setAnswers((prev) => ({ ...prev, [current.id]: value }));
+    // Persist the new answer immediately — `value` is reliable here because
+    // we pass it through; reading from `answers` would still be stale.
+    persistAnswer(current.id, value);
     setTimeout(() => {
       if (current.id === "bmi") { setShowBmiCard(true); return; }
       doAdvance();
@@ -224,6 +267,11 @@ const Survey = () => {
         eligibility: "eligible",
         heightCm,
         weightKg,
+        bmi,
+      });
+      void track(EVENTS.lead_created, {
+        lead_id: id,
+        gender: gender ?? null,
         bmi,
       });
       navigate("/termin", {

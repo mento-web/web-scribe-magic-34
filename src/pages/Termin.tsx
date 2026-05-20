@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { fetchSlots, bookSlot, type Slot } from "@/lib/booking";
 import { updateLeadBooking } from "@/lib/leads";
+import { EVENTS, track } from "@/lib/tracking";
 
 /* ============================================================================
    Termin.tsx — Cal.com-backed booking page.
@@ -139,6 +140,12 @@ const Termin = () => {
       setBookingError(result.error);
       return;
     }
+
+    void track(EVENTS.booking_confirmed, {
+      lead_id: leadId ?? null,
+      slot_iso: selectedSlot.startIso,
+      cal_booking_id: result.bookingId,
+    });
 
     // Fire-and-don't-block leads UPDATE. Skipped entirely if we don't have a
     // lead handle (e.g. the Supabase INSERT in Survey.tsx silently failed).
@@ -386,7 +393,13 @@ const Termin = () => {
                 <button
                   key={slot.startIso}
                   disabled={!slot.available}
-                  onClick={() => setSelectedSlot(slot)}
+                  onClick={() => {
+                    setSelectedSlot(slot);
+                    void track(EVENTS.slot_selected, {
+                      lead_id: leadId ?? null,
+                      slot_iso: slot.startIso,
+                    });
+                  }}
                   className="rounded-full bg-muted text-foreground py-3 text-sm font-medium hover:bg-foreground hover:text-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-muted disabled:hover:text-foreground"
                 >
                   {formatSlotTime(slot.startIso)}

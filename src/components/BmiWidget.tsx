@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { EVENTS, track } from "@/lib/tracking";
 
 /* ============================================================================
    BmiWidget — height + weight + gender form that funnels into the analysis
@@ -35,10 +36,17 @@ export const BmiWidget = ({ variant = "light" }: BmiWidgetProps) => {
 
   // Submit → drop user into the analysis page with their inputs as URL params.
   const go = () => {
-    if (canSubmit)
-      navigate(
-        `/analyse?height=${height}&weight=${weight}&gender=${gender}`,
-      );
+    if (!canSubmit) return;
+    const h = Number(height) / 100;
+    const w = Number(weight);
+    const bmi = h > 0 && w > 0 ? Number((w / (h * h)).toFixed(2)) : null;
+    void track(EVENTS.bmi_calculated, {
+      height_cm: Number(height),
+      weight_kg: w,
+      gender,
+      bmi,
+    });
+    navigate(`/analyse?height=${height}&weight=${weight}&gender=${gender}`);
   };
 
   const isDark = variant === "dark";

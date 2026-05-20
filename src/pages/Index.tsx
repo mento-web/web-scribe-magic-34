@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/carousel";
 import { SiteHeader } from "@/components/SiteHeader";
 import { BmiWidget } from "@/components/BmiWidget";
+import { EVENTS, track } from "@/lib/tracking";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
@@ -280,6 +281,7 @@ const Index = () => {
             {/* Left card — lavender background + GLP-1 pen product photo */}
             <Link
               to="/survey/women"
+              onClick={() => void track(EVENTS.cta_clicked, { cta_id: "hero_twin_women", target: "/survey/women" })}
               className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
               style={{ background: "hsl(var(--tint-lavender))" }}
             >
@@ -302,6 +304,7 @@ const Index = () => {
             {/* Right card — powder-blue background + DJ Khaled portrait */}
             <Link
               to="/survey/men"
+              onClick={() => void track(EVENTS.cta_clicked, { cta_id: "hero_twin_men", target: "/survey/men" })}
               className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
               style={{ background: "hsl(var(--tint-powder-blue))" }}
             >
@@ -357,6 +360,7 @@ const Index = () => {
               <Link
                 key={c.label}
                 to={c.to}
+                onClick={() => void track(EVENTS.cta_clicked, { cta_id: `secondary_tile_${c.label}`, target: c.to })}
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 transition-opacity"
                 style={{ background: c.tint }}
               >

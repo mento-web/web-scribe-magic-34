@@ -22,6 +22,7 @@
    ========================================================================= */
 
 import { supabase } from "@/integrations/supabase/client";
+import { backfillLeadSurveyResponses } from "@/lib/tracking";
 
 export type Eligibility = "eligible" | "borderline" | "low-bmi";
 export type Gender = "women" | "men";
@@ -68,6 +69,13 @@ export async function createLead(input: CreateLeadInput): Promise<LeadHandle> {
   });
 
   if (error) throw new Error(error.message);
+
+  // Stamp the new lead_id onto every survey_responses row this visitor has
+  // already written. Best-effort — if it fails, the funnel-by-campaign query
+  // simply won't pivot survey answers through this lead, but the lead row
+  // itself still exists. Never blocks the user.
+  void backfillLeadSurveyResponses(id);
+
   return { id, leadToken };
 }
 

@@ -24,6 +24,8 @@ import Konto from "./pages/Konto.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import { AuthProvider } from "@/lib/auth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { getOrCreateVisitor } from "@/lib/tracking";
+import { usePageTracking } from "@/hooks/usePageTracking";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +62,32 @@ const ScrollToHash = () => {
   return null;
 };
 
+/* ============================================================================
+   RouteTelemetry — mounts the page-view tracker.
+
+   Lives alongside ScrollToHash so that route-change side effects (scrolling +
+   analytics) are all in one place inside <BrowserRouter>. usePageTracking
+   fires `page_viewed` whenever pathname or search changes.
+   ========================================================================= */
+const RouteTelemetry = () => {
+  usePageTracking();
+  return null;
+};
+
+/* ============================================================================
+   VisitorInit — kicks off visitor-row creation once on app mount.
+
+   getOrCreateVisitor() is idempotent and safe to call early; track() also
+   calls it lazily on first event. We invoke it here so the row exists by the
+   time any events fire, avoiding a brief FK race on the very first page hit.
+   ========================================================================= */
+const VisitorInit = () => {
+  useEffect(() => {
+    void getOrCreateVisitor();
+  }, []);
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -69,7 +97,9 @@ const App = () => (
         {/* AuthProvider must live inside BrowserRouter because some auth
             consumers (ProtectedRoute) use useLocation. */}
         <AuthProvider>
+          <VisitorInit />
           <ScrollToHash />
+          <RouteTelemetry />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/survey/:gender" element={<Survey />} />
