@@ -569,10 +569,13 @@ const Index = () => {
                     {c.title}
                   </h3>
                 </div>
-                {/* Inset photo window — same dimensions as the previous
-                    GradientArt placeholder so the card heights stay
-                    consistent across the 3-up row. */}
-                <div className="relative flex-1 min-h-[180px] md:min-h-[200px] mx-6 mb-6 rounded-[12px] overflow-hidden">
+                {/* Inset photo window — locked to a 4:3 ratio so all three
+                    photos render at exactly the same size regardless of
+                    how many lines the headline above wraps to. `mt-auto`
+                    pushes the window to the bottom of the card so the
+                    photo bases align across the row even when one title
+                    is shorter than another. */}
+                <div className="relative aspect-[4/3] mt-auto mx-6 mb-6 rounded-[12px] overflow-hidden">
                   <img
                     src={c.image}
                     alt={c.alt}
