@@ -39,7 +39,7 @@ import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
 // "20 % verlieren" lifestyle band (section 6). Optimised JPEG at
 // 1600 px wide (~400 kB) — visual quality is fine at that size since
 // the image is decorative texture and we crop it via object-cover.
-import skinBanner from "@/assets/skin-banner.jpg";
+import cocoonBanner from "@/assets/cocoon-banner.jpg";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -452,26 +452,26 @@ const Index = () => {
           <div className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center">
             {/* Photo backdrop — covers the band edge-to-edge */}
             <img
-              src={skinBanner}
+              src={cocoonBanner}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              {/* White editorial headline against the warm skin photo;
-                  drop-shadow-lg gives enough contrast against the lighter
-                  skin highlights without needing a separate overlay. */}
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.35)]">
+              {/* Black editorial headline reads cleanly against the plain
+                  peach backdrop on the left half of the cocoon banner;
+                  no overlay or text-shadow needed. */}
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
                 <Link to="/survey/women">
-                  <PillButton variant="light">
+                  <PillButton>
                     Jetzt abnehmen <ArrowRight className="h-4 w-4" />
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-white/85 max-w-md [text-shadow:0_1px_6px_rgb(0_0_0/0.4)]">
+              <p className="mt-8 text-xs text-foreground/60 max-w-md">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>
