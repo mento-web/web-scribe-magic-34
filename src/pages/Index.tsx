@@ -553,7 +553,7 @@ const Index = () => {
                 alt: "helvi App auf dem Smartphone mit Gewichtsverlauf",
               },
               {
-                title: "Klinisch geprüfte, zugelassene Behandlungen",
+                title: "Klinisch geprüfte Behandlungen",
                 tint: "hsl(var(--tint-powder-blue))",
                 image: doctorChat,
                 alt: "Ärztin am Schreibtisch mit Stethoskop und GLP-1 Pens",
@@ -569,13 +569,14 @@ const Index = () => {
                     {c.title}
                   </h3>
                 </div>
-                {/* Inset photo window — locked to a 4:3 ratio so all three
-                    photos render at exactly the same size regardless of
-                    how many lines the headline above wraps to. `mt-auto`
-                    pushes the window to the bottom of the card so the
-                    photo bases align across the row even when one title
-                    is shorter than another. */}
-                <div className="relative aspect-[4/3] mt-auto mx-6 mb-6 rounded-[12px] overflow-hidden">
+                {/* Inset photo window — locked to a 3:2 ratio, the native
+                    aspect of all three source JPEGs (1400 × 933). That
+                    avoids any cropping and guarantees all three photos
+                    render at exactly the same size across the row.
+                    `mt-auto` pushes the window to the bottom of the card
+                    so the photo bases align even when one title wraps to
+                    a different number of lines. */}
+                <div className="relative aspect-[3/2] mt-auto mx-6 mb-6 rounded-[12px] overflow-hidden">
                   <img
                     src={c.image}
                     alt={c.alt}
