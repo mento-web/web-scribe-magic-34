@@ -53,21 +53,43 @@ export const BmiWidget = ({ variant = "light" }: BmiWidgetProps) => {
 
   return (
     <div className="space-y-4">
-      {/* === Gender toggle — pill segmented control === */}
-      <div className="flex gap-2">
+      {/* === Gender toggle — single track with a sliding thumb ===
+         One pill-shaped track holds both options. A `<span>` thumb is
+         positioned absolutely behind the two button labels and slides
+         left/right via translate-x when the selection changes. The
+         labels themselves stay in place; only their colour swaps so
+         the chosen one reads white-on-black (light variant) or
+         black-on-white (dark variant). */}
+      <div
+        role="group"
+        aria-label="Geschlecht"
+        className={`relative rounded-full p-1 flex ${
+          isDark ? "bg-white/10" : "bg-muted"
+        }`}
+      >
+        {/* The sliding thumb. inset-y-1 / left-1 sit it inside the 4 px
+            track padding; width is half the track minus that padding so
+            translate-x-full moves it exactly to the right slot. */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full transition-transform duration-300 ease-out ${
+            isDark ? "bg-white" : "bg-foreground"
+          } ${gender === "men" ? "translate-x-full" : "translate-x-0"}`}
+        />
         {(["women", "men"] as const).map((g) => (
           <button
             key={g}
             type="button"
             onClick={() => setGender(g)}
-            className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+            aria-pressed={gender === g}
+            className={`relative z-10 flex-1 py-2.5 text-sm font-semibold transition-colors duration-200 ${
               isDark
                 ? gender === g
-                  ? "bg-white text-black"
-                  : "bg-white/10 text-white/50 hover:text-white/80"
+                  ? "text-black"
+                  : "text-white/50 hover:text-white/80"
                 : gender === g
-                ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                ? "text-background"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {g === "women" ? "Frau" : "Mann"}
