@@ -13,9 +13,6 @@ import {
   ShieldCheck,
   Play,
   Star,
-  BookOpen,
-  ClipboardCheck,
-  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +29,12 @@ import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
+// 3D-rendered illustrations for the three secondary CTA tiles. Each ships
+// at 512px wide with built-in soft shadows; sit them inside a white well so
+// the illustration's own white background blends seamlessly.
+import bookIcon from "@/assets/illustrations/book-icon.png";
+import checklistIcon from "@/assets/illustrations/checklist-icon.png";
+import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -346,9 +349,8 @@ const Index = () => {
                 label: "Wissen",
                 tint: "hsl(var(--tint-peach))",
                 to: "/wissen",
-                from: "#F5D5C5",
-                to2: "#E0B5A0",
-                glyph: <BookOpen className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: bookIcon,
+                alt: "Aufgeschlagenes Buch",
               },
               {
                 // Eligibility hook — short, direct question pointing the
@@ -357,18 +359,16 @@ const Index = () => {
                 label: "Sind Sie geeignet?",
                 tint: "hsl(var(--tint-dusty-pink))",
                 to: "/survey/women",
-                from: "#E8C5B8",
-                to2: "#C9A89A",
-                glyph: <ClipboardCheck className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: checklistIcon,
+                alt: "Klemmbrett mit Checkliste",
               },
               {
                 // BMI Rechner tool — already lives at /bmi-rechner.
                 label: "BMI Rechner",
                 tint: "hsl(var(--tint-moss))",
                 to: "/bmi-rechner",
-                from: "#C9D2BB",
-                to2: "#A8B596",
-                glyph: <Calculator className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: calculatorIcon,
+                alt: "Taschenrechner",
               },
             ].map((c) => (
               <Link
@@ -378,10 +378,18 @@ const Index = () => {
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
-                {/* The glyph rides inside the gradient pill; GradientArt
-                    centres it in the available space automatically. */}
-                <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden">
-                  <GradientArt from={c.from} to={c.to2} glyph={c.glyph} />
+                {/* White rounded well lifts the 3D illustration off the
+                    pastel card. The illustrations ship with their own white
+                    background and soft drop shadow, so a flat white container
+                    blends seamlessly — no clipping artefacts at the edges. */}
+                <div className="h-16 w-16 shrink-0 rounded-2xl bg-background overflow-hidden flex items-center justify-center">
+                  <img
+                    src={c.illustration}
+                    alt={c.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
                   {c.label}
