@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { PageShell } from "@/components/PageShell";
+import { PillButton } from "@/components/PillButton";
 
 /* ============================================================================
    FAQ — frequently asked questions (German).
@@ -121,17 +122,15 @@ const FAQ = () => (
             für Sie geeignet ist.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              to="/survey/women"
-              className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-6 py-3 text-sm font-medium hover:opacity-90 transition-opacity w-52 justify-center"
-            >
-              Für Frauen <ArrowRight className="h-4 w-4" />
+            <Link to="/survey/women">
+              <PillButton variant="solid" className="w-52 justify-center">
+                Für Frauen <ArrowRight className="h-4 w-4" />
+              </PillButton>
             </Link>
-            <Link
-              to="/survey/men"
-              className="inline-flex items-center gap-2 rounded-full border border-foreground px-6 py-3 text-sm font-medium hover:bg-foreground hover:text-background transition-colors w-52 justify-center"
-            >
-              Für Männer <ArrowRight className="h-4 w-4" />
+            <Link to="/survey/men">
+              <PillButton variant="outline" className="w-52 justify-center">
+                Für Männer <ArrowRight className="h-4 w-4" />
+              </PillButton>
             </Link>
           </div>
         </div>

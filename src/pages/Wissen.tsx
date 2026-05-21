@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/PageShell";
+import { PillButton } from "@/components/PillButton";
 import { articles } from "@/lib/articles";
 
 /* ============================================================================
@@ -101,14 +102,14 @@ const Wissen = () => (
               mobile, side-by-side 208px from sm upward. */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link to="/survey/women" className="w-full sm:w-auto">
-              <span className="inline-flex w-full sm:w-52 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium bg-foreground text-background hover:opacity-90 transition-opacity">
+              <PillButton variant="solid" className="w-full sm:w-52 justify-center">
                 Für Frauen <ArrowRight className="h-4 w-4" />
-              </span>
+              </PillButton>
             </Link>
             <Link to="/survey/men" className="w-full sm:w-auto">
-              <span className="inline-flex w-full sm:w-52 items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background transition-colors">
+              <PillButton variant="outline" className="w-full sm:w-52 justify-center">
                 Für Männer <ArrowRight className="h-4 w-4" />
-              </span>
+              </PillButton>
             </Link>
           </div>
         </div>

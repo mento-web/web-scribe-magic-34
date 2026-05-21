@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/carousel";
 import { SiteHeader } from "@/components/SiteHeader";
 import { BmiWidget } from "@/components/BmiWidget";
+import { PillButton } from "@/components/PillButton";
 import { EVENTS, track } from "@/lib/tracking";
 import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
@@ -52,9 +53,10 @@ import doctorChat from "@/assets/doctor-chat.jpg";
 
    This is the marketing landing page for helvi. It is one long composed file
    on purpose: the small helper components (BmiWidget, UtilityBar, Header,
-   TrustList, PillButton, ArrowCircleButton, GradientArt, AvatarTile) live at
-   the top of the file, and the `Index` component at the bottom assembles them
-   into the 13 page sections.
+   TrustList, ArrowCircleButton, GradientArt, AvatarTile) live at the top of
+   the file, and the `Index` component at the bottom assembles them into the
+   13 page sections. PillButton is imported from `@/components/PillButton`
+   because it is also used by /wissen.
 
    Section order (top to bottom of what the user sees):
      1.  Utility bar          — thin royal-blue strip with "resume visit" link
@@ -131,40 +133,8 @@ const TrustList = () => {
   );
 };
 
-// Reusable rounded-full pill button used as a CTA throughout the page.
-// `solid` = black bg / white text (primary), `outline` = transparent / black
-// border (secondary), `light` = white bg used over dark photo cards.
-// This renders a span so it can be nested inside <Link>.
-//
-// Hover micro-interaction: the pill stays fully opaque (no fade) and
-// instead grows its right padding from 24 px → 32 px, which nudges the
-// trailing arrow icon further to the right. The arrow itself also picks
-// up a small translate-x so the motion reads as "leaning into" the
-// arrow direction rather than just stretching the pill. Targets the
-// last child <svg> so text-only callers (no icon) get the padding grow
-// without erroring on a missing svg.
-const PillButton = ({
-  children,
-  variant = "solid",
-  className = "",
-}: {
-  children: React.ReactNode;
-  variant?: "solid" | "outline" | "light";
-  className?: string;
-}) => {
-  const styles = {
-    solid: "bg-foreground text-background",
-    outline: "bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background",
-    light: "bg-white text-foreground",
-  }[variant];
-  return (
-    <span
-      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all duration-200 ease-out hover:pr-8 [&>svg:last-child]:transition-transform [&>svg:last-child]:duration-200 [&>svg:last-child]:ease-out hover:[&>svg:last-child]:translate-x-0.5 ${styles} ${className}`}
-    >
-      {children}
-    </span>
-  );
-};
+// (PillButton lives in src/components/PillButton.tsx — shared with
+// /wissen so the rounded-full CTA pill stays identical across pages.)
 
 // Small black circle with a white arrow inside. Used as the trailing
 // "go here" icon on the three secondary cards under the twin hero cards.
