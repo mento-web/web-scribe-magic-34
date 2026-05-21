@@ -13,9 +13,6 @@ import {
   ShieldCheck,
   Play,
   Star,
-  BookOpen,
-  ClipboardCheck,
-  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +29,17 @@ import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
+// 3D-rendered illustrations for the three secondary CTA tiles. Each ships
+// at 512px wide with built-in soft shadows; sit them inside a white well so
+// the illustration's own white background blends seamlessly.
+import bookIcon from "@/assets/illustrations/book-icon.png";
+import checklistIcon from "@/assets/illustrations/checklist-icon.png";
+import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
+// Skin-texture banner used as the photographic backdrop of the
+// "20 % verlieren" lifestyle band (section 6). Optimised JPEG at
+// 1600 px wide (~400 kB) — visual quality is fine at that size since
+// the image is decorative texture and we crop it via object-cover.
+import skinBanner from "@/assets/skin-banner.jpg";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -348,7 +356,12 @@ const Index = () => {
                 to: "/wissen",
                 from: "#F5D5C5",
                 to2: "#E0B5A0",
-                glyph: <BookOpen className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: bookIcon,
+                alt: "Aufgeschlagenes Buch",
+                // Tilt direction on hover. Tailwind needs the full class
+                // string to appear as a source-code literal so the compiler
+                // includes it — listing both directions here is intentional.
+                tilt: "group-hover:-rotate-6",
               },
               {
                 // Eligibility hook — short, direct question pointing the
@@ -359,7 +372,9 @@ const Index = () => {
                 to: "/survey/women",
                 from: "#E8C5B8",
                 to2: "#C9A89A",
-                glyph: <ClipboardCheck className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: checklistIcon,
+                alt: "Klemmbrett mit Checkliste",
+                tilt: "group-hover:rotate-6",
               },
               {
                 // BMI Rechner tool — already lives at /bmi-rechner.
@@ -368,7 +383,9 @@ const Index = () => {
                 to: "/bmi-rechner",
                 from: "#C9D2BB",
                 to2: "#A8B596",
-                glyph: <Calculator className="h-6 w-6" strokeWidth={1.5} />,
+                illustration: calculatorIcon,
+                alt: "Taschenrechner",
+                tilt: "group-hover:rotate-6",
               },
             ].map((c) => (
               <Link
@@ -378,15 +395,31 @@ const Index = () => {
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
-                {/* The glyph rides inside the gradient pill; GradientArt
-                    centres it in the available space automatically. */}
-                <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden">
-                  <GradientArt from={c.from} to={c.to2} glyph={c.glyph} />
+                {/* Gradient backdrop stays static; the illustration floats
+                    above it and tilts + scales up on hover for a touch of
+                    micro-interaction. Hover is on the outer card group so
+                    the whole tile reacts. Scale is kept modest (105%) so
+                    the rotated illustration still fits inside the circle
+                    without its corners clipping past the rim. Tilt
+                    direction comes from `c.tilt` per illustration. */}
+                <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden relative">
+                  <GradientArt from={c.from} to={c.to2} />
+                  <img
+                    src={c.illustration}
+                    alt={c.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-105 ${c.tilt}`}
+                  />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
                   {c.label}
                 </p>
-                <ArrowCircleButton className="group-hover:translate-x-1 transition-transform" />
+                {/* Light nudge on card hover — 2 px slide over 500 ms with
+                    ease-out, deliberately slower than the illustration tilt
+                    so the arrow reads as "settling forward" rather than
+                    eagerly leading. */}
+                <ArrowCircleButton className="group-hover:translate-x-0.5 transition-transform duration-500 ease-out" />
               </Link>
             ))}
           </div>
@@ -414,34 +447,31 @@ const Index = () => {
         <div className="container mx-auto">
           {/* min-h ladder: shorter on tiny phones so the floating "Diese
               Woche" card doesn't get pushed off-screen, restored to the
-              original 420 / 520 from sm upward. */}
-          <div
-            className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center"
-            style={{
-              background:
-                "radial-gradient(120% 80% at 10% 20%, #F7E6D5 0%, #EFD4C0 35%, #E0B8A0 100%)",
-            }}
-          >
-            <div
-              className="absolute -top-32 -right-20 h-96 w-96 rounded-full blur-3xl opacity-50"
-              style={{ background: "#FBE3D2" }}
-            />
-            <div
-              className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full blur-3xl opacity-40"
-              style={{ background: "#E8B89E" }}
+              original 420 / 520 from sm upward. The skin-texture banner
+              sits behind everything else. */}
+          <div className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center">
+            {/* Photo backdrop — covers the band edge-to-edge */}
+            <img
+              src={skinBanner}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
+              {/* White editorial headline against the warm skin photo;
+                  drop-shadow-lg gives enough contrast against the lighter
+                  skin highlights without needing a separate overlay. */}
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.35)]">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
                 <Link to="/survey/women">
-                  <PillButton>
+                  <PillButton variant="light">
                     Jetzt abnehmen <ArrowRight className="h-4 w-4" />
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-foreground/50 max-w-md">
+              <p className="mt-8 text-xs text-white/85 max-w-md [text-shadow:0_1px_6px_rgb(0_0_0/0.4)]">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>

@@ -53,21 +53,51 @@ export const BmiWidget = ({ variant = "light" }: BmiWidgetProps) => {
 
   return (
     <div className="space-y-4">
-      {/* === Gender toggle — pill segmented control === */}
-      <div className="flex gap-2">
+      {/* === Gender toggle — single track with a sliding thumb ===
+         One pill-shaped track holds both options. A `<span>` thumb is
+         positioned absolutely behind the two button labels and slides
+         left/right via translate-x when the selection changes. The
+         labels themselves stay in place; only their colour swaps so
+         the chosen one reads white-on-black (light variant) or
+         black-on-white (dark variant).
+
+         Sizing notes: no inner padding on the track and a flat 50 %
+         thumb width — translate-x-full then moves it exactly to the
+         right slot. Earlier attempt used w-[calc(50%-4px)] but CSS
+         calc requires whitespace around the minus, which Tailwind's
+         arbitrary value syntax doesn't allow inline (would need
+         `calc(50%_-_4px)`); easier to skip the padding altogether. */}
+      <div
+        role="group"
+        aria-label="Geschlecht"
+        className={`relative rounded-full flex ${
+          isDark ? "bg-white/10" : "bg-muted"
+        }`}
+      >
+        {/* The sliding thumb — full height, half the track width,
+            translates exactly one full thumb width when men is selected.
+            A subtle shadow lifts it off the track so the active option
+            feels tactile rather than just a colour swap. */}
+        <span
+          aria-hidden="true"
+          className={`pointer-events-none absolute inset-y-0 left-0 w-1/2 rounded-full shadow-sm transition-transform duration-300 ease-out ${
+            isDark ? "bg-white" : "bg-foreground"
+          } ${gender === "men" ? "translate-x-full" : "translate-x-0"}`}
+        />
         {(["women", "men"] as const).map((g) => (
           <button
             key={g}
             type="button"
             onClick={() => setGender(g)}
-            className={`flex-1 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 ${
+            aria-pressed={gender === g}
+            className={`relative z-10 flex-1 py-2.5 text-sm font-semibold transition-colors duration-200 ${
               isDark
                 ? gender === g
-                  ? "bg-white text-black"
-                  : "bg-white/10 text-white/50 hover:text-white/80"
+                  ? "text-black"
+                  : "text-white/50 hover:text-white/80"
                 : gender === g
-                ? "bg-foreground text-background"
-                : "bg-muted text-muted-foreground hover:text-foreground"
+                ? "text-background"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {g === "women" ? "Frau" : "Mann"}
