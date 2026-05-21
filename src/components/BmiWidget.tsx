@@ -69,10 +69,12 @@ export const BmiWidget = ({ variant = "light" }: BmiWidgetProps) => {
       >
         {/* The sliding thumb. inset-y-1 / left-1 sit it inside the 4 px
             track padding; width is half the track minus that padding so
-            translate-x-full moves it exactly to the right slot. */}
+            translate-x-full moves it exactly to the right slot. A small
+            shadow lifts it off the track so the active option feels
+            tactile rather than just a colour swap. */}
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full transition-transform duration-300 ease-out ${
+          className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
             isDark ? "bg-white" : "bg-foreground"
           } ${gender === "men" ? "translate-x-full" : "translate-x-0"}`}
         />
