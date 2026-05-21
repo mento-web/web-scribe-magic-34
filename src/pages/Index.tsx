@@ -135,6 +135,14 @@ const TrustList = () => {
 // `solid` = black bg / white text (primary), `outline` = transparent / black
 // border (secondary), `light` = white bg used over dark photo cards.
 // This renders a span so it can be nested inside <Link>.
+//
+// Hover micro-interaction: the pill stays fully opaque (no fade) and
+// instead grows its right padding from 24 px → 32 px, which nudges the
+// trailing arrow icon further to the right. The arrow itself also picks
+// up a small translate-x so the motion reads as "leaning into" the
+// arrow direction rather than just stretching the pill. Targets the
+// last child <svg> so text-only callers (no icon) get the padding grow
+// without erroring on a missing svg.
 const PillButton = ({
   children,
   variant = "solid",
@@ -145,13 +153,13 @@ const PillButton = ({
   className?: string;
 }) => {
   const styles = {
-    solid: "bg-foreground text-background hover:opacity-90",
+    solid: "bg-foreground text-background",
     outline: "bg-transparent text-foreground border border-foreground hover:bg-foreground hover:text-background",
-    light: "bg-white text-foreground hover:bg-white/90",
+    light: "bg-white text-foreground",
   }[variant];
   return (
     <span
-      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-colors ${styles} ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-all duration-200 ease-out hover:pr-8 [&>svg:last-child]:transition-transform [&>svg:last-child]:duration-200 [&>svg:last-child]:ease-out hover:[&>svg:last-child]:translate-x-0.5 ${styles} ${className}`}
     >
       {children}
     </span>
