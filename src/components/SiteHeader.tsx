@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronDown, User } from "lucide-react";
+import { ChevronDown, Menu, User } from "lucide-react";
 import { useAuth } from "@/lib/auth";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 /* ============================================================================
    SiteHeader — shared sticky nav used on the landing page and every content
@@ -9,20 +15,26 @@ import { useAuth } from "@/lib/auth";
 
    Structure (left → right):
      1.  Lowercase "helvi" wordmark (Link to /)
-     2.  Centre nav:
+     2.  Centre nav (desktop only, `hidden md:flex`):
            • Ressourcen ▾   — hover dropdown with BMI Rechner + Protein Rechner
            • Wie es funktioniert  — anchor on the landing page
            • Preise         — /pricing
            • FAQ            — /faq
-     3.  Right: small auth-aware affordance:
-           • signed out → generic User icon linking to /anmelden
-           • signed in  → small initial-on-circle linking to /konto
+     3.  Right side:
+           • Mobile (`md:hidden`): hamburger that opens MobileNavDrawer +
+             the auth affordance.
+           • Desktop (`hidden md:flex`): auth affordance only.
 
    Why a single shared component:
      - The two former inline Header copies were drifting in subtle ways
        (different anchor styles, slightly different gap values).
-     - The Ressourcen dropdown is fiddly enough that we only want it in one
-       place. Maintainers should never edit a nav link in two files.
+     - The Ressourcen dropdown and the new mobile drawer are fiddly enough
+       that we only want each to exist in one place.
+
+   Mobile-only additions (2026-05): the desktop nav stays exactly as it was
+   — the hamburger + Sheet drawer below covers narrow viewports so Ressourcen,
+   "Wie es funktioniert", Preise, and FAQ are reachable from the homepage on
+   phones (previously only the footer linked them).
    ========================================================================= */
 
 // Hover-triggered dropdown for the "Ressourcen" nav item.
@@ -132,9 +144,148 @@ const AccountAffordance = () => {
   );
 };
 
+/* ============================================================================
+   MobileNavDrawer — right-side Sheet that mirrors the desktop nav for phones.
+
+   Rendered alongside the AccountAffordance on `< md` viewports. Owns its own
+   open/close state. Each row is a large tap target (≥48px) with no hover-only
+   styling so touch users get clear `:active` feedback. Closing on link click
+   feels native; the Sheet overlay also closes on backdrop tap (Radix default).
+   pt-safe / pb-safe / pr-safe keep content clear of the iOS Dynamic Island
+   and home indicator on notched iPhones.
+   ========================================================================= */
+const MobileNavDrawer = () => {
+  // Local open state so we can imperatively close after a link tap.
+  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const close = () => setOpen(false);
+
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      {/* Hamburger trigger — only visible on mobile. The Sheet primitive
+          provides its own SheetTrigger, but using a plain button + onClick
+          keeps tap target sizing explicit (h-10 w-10 → 40px). */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Menü öffnen"
+        className="md:hidden h-10 w-10 -mr-2 flex items-center justify-center rounded-full hover:bg-muted active:opacity-70 transition-opacity"
+      >
+        <Menu className="h-5 w-5" strokeWidth={2} />
+      </button>
+
+      <SheetContent
+        side="right"
+        className="w-[85%] sm:max-w-sm p-0 pt-safe pb-safe pr-safe flex flex-col"
+      >
+        {/* Title / Description are required for a11y by Radix Dialog; we
+            hide them visually but keep them in the accessibility tree. */}
+        <SheetTitle className="sr-only">Navigation</SheetTitle>
+        <SheetDescription className="sr-only">
+          Hauptnavigation für helvi.ch
+        </SheetDescription>
+
+        {/* === Drawer header — wordmark for orientation === */}
+        <div className="px-6 pt-6 pb-4">
+          <Link
+            to="/"
+            onClick={close}
+            className="text-2xl font-bold tracking-tight lowercase"
+          >
+            helvi
+          </Link>
+        </div>
+
+        {/* === Primary nav list === */}
+        <nav className="flex-1 overflow-y-auto px-2">
+          {/* Ressourcen group — header + two indented children, since the
+              desktop dropdown doesn't translate well to a drawer. */}
+          <p className="px-4 pt-4 pb-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+            Ressourcen
+          </p>
+          <Link
+            to="/bmi-rechner"
+            onClick={close}
+            className="block w-full px-4 py-3 text-base text-foreground rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+          >
+            BMI Rechner
+          </Link>
+          <Link
+            to="/proteinrechner"
+            onClick={close}
+            className="block w-full px-4 py-3 text-base text-foreground rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+          >
+            Protein Rechner
+          </Link>
+
+          {/* Top-level destinations */}
+          <div className="mt-4 border-t border-border pt-2">
+            <Link
+              to="/#so-funktioniert"
+              onClick={close}
+              className="block w-full px-4 py-3 text-base text-foreground rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+            >
+              Wie es funktioniert
+            </Link>
+            <Link
+              to="/pricing"
+              onClick={close}
+              className="block w-full px-4 py-3 text-base text-foreground rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+            >
+              Preise
+            </Link>
+            <Link
+              to="/faq"
+              onClick={close}
+              className="block w-full px-4 py-3 text-base text-foreground rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+            >
+              FAQ
+            </Link>
+          </div>
+        </nav>
+
+        {/* === Drawer footer — auth-aware account row pinned to the bottom === */}
+        <div className="border-t border-border px-4 py-4">
+          {user ? (
+            <Link
+              to="/konto"
+              onClick={close}
+              className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+            >
+              <span className="h-9 w-9 rounded-full bg-foreground text-background flex items-center justify-center font-editorial text-lg leading-none">
+                {(() => {
+                  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+                  const fn = meta.first_name as string | undefined;
+                  const full = meta.full_name as string | undefined;
+                  const fromEmail = user.email?.split("@")[0] ?? "";
+                  return (fn ?? full ?? fromEmail).charAt(0).toUpperCase() || "?";
+                })()}
+              </span>
+              <span className="text-base">Mein Konto</span>
+            </Link>
+          ) : (
+            <Link
+              to="/anmelden"
+              onClick={close}
+              className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-muted active:opacity-70 transition-opacity"
+            >
+              <span className="h-9 w-9 rounded-full border border-border flex items-center justify-center">
+                <User className="h-4 w-4" />
+              </span>
+              <span className="text-base">Anmelden</span>
+            </Link>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
 // Single sticky white nav, identical on every page.
+// pt-safe pads the header against the iPhone Dynamic Island; the value is 0
+// on devices without a notch, so desktop / Android layout is unchanged.
 export const SiteHeader = () => (
-  <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
+  <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border pt-safe">
     <div className="container mx-auto flex items-center justify-between h-16 px-4">
       {/* === Left: helvi wordmark === */}
       <Link to="/" className="text-2xl font-bold tracking-tight lowercase">
@@ -164,8 +315,14 @@ export const SiteHeader = () => (
         </Link>
       </nav>
 
-      {/* === Right: auth-aware account affordance === */}
-      <AccountAffordance />
+      {/* === Right: account affordance, plus mobile hamburger ===
+          On desktop the account icon sits alone (unchanged from before).
+          On mobile we add the hamburger to the right of it so the user's
+          thumb has a single tap zone for navigation. */}
+      <div className="flex items-center gap-1">
+        <AccountAffordance />
+        <MobileNavDrawer />
+      </div>
     </div>
   </header>
 );

@@ -68,16 +68,19 @@ const UtilityBar = () => {
   return (
     <div className="bg-accent text-white text-sm">
       <div className="container mx-auto flex items-center justify-center relative h-9 px-4">
-        <p className="text-center">
+        {/* pr-10 on mobile reserves room for the absolute-positioned X so
+            wrapping copy on narrow phones can't slide under the button. */}
+        <p className="text-center pr-10 md:pr-0">
           Online-Beratung fortsetzen?{" "}
           <Link to="/survey/women" className="underline underline-offset-4 font-medium">
             Weiter
           </Link>
         </p>
+        {/* p-2 -m-2 expands the tap target to ~40px without growing the icon. */}
         <button
           onClick={() => setOpen(false)}
           aria-label="Schliessen"
-          className="absolute right-4 opacity-80 hover:opacity-100"
+          className="absolute right-2 p-2 -m-2 opacity-80 hover:opacity-100 active:opacity-60 transition-opacity"
         >
           <X className="h-4 w-4" />
         </button>
@@ -139,9 +142,11 @@ const PillButton = ({
 
 // Small black circle with a white arrow inside. Used as the trailing
 // "go here" icon on the three secondary cards under the twin hero cards.
+// Sized 44px on mobile (iOS minimum tap target) and 40px on desktop —
+// the desktop value matches the original design exactly.
 const ArrowCircleButton = ({ className = "" }: { className?: string }) => (
   <span
-    className={`inline-flex items-center justify-center rounded-full h-10 w-10 bg-foreground text-background shrink-0 ${className}`}
+    className={`inline-flex items-center justify-center rounded-full h-11 w-11 md:h-10 md:w-10 bg-foreground text-background shrink-0 ${className}`}
   >
     <ArrowRight className="h-4 w-4" />
   </span>
@@ -258,7 +263,10 @@ const Index = () => {
           {/* items-center so the trust list is vertically centred against the headline */}
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-center">
             <div className="lg:col-span-8">
-              <h1 className="font-editorial text-[56px] md:text-[88px] lg:text-[112px] leading-[0.9] tracking-tight">
+              {/* text-[44px] on the smallest phones (≤360px) prevents the
+                  serif headline from wrapping awkwardly; everything from sm
+                  upward is identical to the previous responsive ladder. */}
+              <h1 className="font-editorial text-[44px] sm:text-[56px] md:text-[88px] lg:text-[112px] leading-[0.9] tracking-tight">
                 Gesünder werden<br />mit helvi.
               </h1>
               <p className="mt-6 text-lg text-muted-foreground max-w-md">
@@ -282,7 +290,7 @@ const Index = () => {
             <Link
               to="/survey/women"
               onClick={() => void track(EVENTS.cta_clicked, { cta_id: "hero_twin_women", target: "/survey/women" })}
-              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
+              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square active:scale-[0.98] transition-transform"
               style={{ background: "hsl(var(--tint-lavender))" }}
             >
               <img
@@ -305,7 +313,7 @@ const Index = () => {
             <Link
               to="/survey/men"
               onClick={() => void track(EVENTS.cta_clicked, { cta_id: "hero_twin_men", target: "/survey/men" })}
-              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square"
+              className="group relative overflow-hidden rounded-[14px] aspect-[4/3] md:aspect-square active:scale-[0.98] transition-transform"
               style={{ background: "hsl(var(--tint-powder-blue))" }}
             >
               <img
@@ -361,7 +369,7 @@ const Index = () => {
                 key={c.label}
                 to={c.to}
                 onClick={() => void track(EVENTS.cta_clicked, { cta_id: `secondary_tile_${c.label}`, target: c.to })}
-                className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 transition-opacity"
+                className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
                 <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden">
@@ -396,8 +404,11 @@ const Index = () => {
          clinical-results disclaimer — required, keep it small and present. */}
       <section className="relative mt-10 md:mt-14 px-4">
         <div className="container mx-auto">
+          {/* min-h ladder: shorter on tiny phones so the floating "Diese
+              Woche" card doesn't get pushed off-screen, restored to the
+              original 420 / 520 from sm upward. */}
           <div
-            className="relative rounded-[14px] overflow-hidden min-h-[420px] md:min-h-[520px] flex items-center"
+            className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center"
             style={{
               background:
                 "radial-gradient(120% 80% at 10% 20%, #F7E6D5 0%, #EFD4C0 35%, #E0B8A0 100%)",
@@ -516,7 +527,7 @@ const Index = () => {
                     {c.title}
                   </h3>
                 </div>
-                <div className="relative flex-1 min-h-[200px] mx-6 mb-6 rounded-[12px] overflow-hidden">
+                <div className="relative flex-1 min-h-[180px] md:min-h-[200px] mx-6 mb-6 rounded-[12px] overflow-hidden">
                   <GradientArt from={c.from} to={c.to} glyph={c.glyph} label={c.label} />
                 </div>
               </div>
@@ -656,7 +667,7 @@ const Index = () => {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {articles.map((a) => (
-              <div key={a.title} className="group cursor-pointer">
+              <div key={a.title} className="group cursor-pointer active:scale-[0.98] transition-transform">
                 <div
                   className="aspect-[5/3] rounded-[12px] mb-4 overflow-hidden relative"
                   style={{ background: `hsl(${a.tint})` }}
@@ -693,14 +704,19 @@ const Index = () => {
             <p className="text-base md:text-lg text-muted-foreground mb-10 max-w-lg mx-auto">
               In 3 Minuten wissen Sie, ob GLP-1 für Sie geeignet ist.
             </p>
+            {/* On mobile both pills stretch full-width and stack; from sm
+                upward they shrink back to the original 208px side-by-side
+                pair so the desktop composition is untouched. The Link wraps
+                need w-full sm:w-auto so the PillButton width actually fills
+                the available space on phones. */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link to="/survey/women">
-                <PillButton variant="solid" className="w-52 justify-center">
+              <Link to="/survey/women" className="w-full sm:w-auto">
+                <PillButton variant="solid" className="w-full sm:w-52 justify-center">
                   Für Frauen <ArrowRight className="h-4 w-4" />
                 </PillButton>
               </Link>
-              <Link to="/survey/men">
-                <PillButton variant="outline" className="w-52 justify-center">
+              <Link to="/survey/men" className="w-full sm:w-auto">
+                <PillButton variant="outline" className="w-full sm:w-52 justify-center">
                   Für Männer <ArrowRight className="h-4 w-4" />
                 </PillButton>
               </Link>
@@ -713,7 +729,9 @@ const Index = () => {
          Five-column link grid (Behandlung / Über helvi / Support / Tools /
          Legal) plus the helvi wordmark column on the left. The HMG line at
          the bottom is legally load-bearing — do not paraphrase or remove. */}
-      <footer className="mt-20 md:mt-28 border-t border-border">
+      {/* pb-safe pads the footer above the iPhone home indicator; the env
+          value is 0 on non-notched devices, so desktop spacing is unchanged. */}
+      <footer className="mt-20 md:mt-28 border-t border-border pb-safe">
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
             <div className="col-span-2 md:col-span-1">
