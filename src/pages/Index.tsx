@@ -353,6 +353,10 @@ const Index = () => {
                 to2: "#E0B5A0",
                 illustration: bookIcon,
                 alt: "Aufgeschlagenes Buch",
+                // Tilt direction on hover. Tailwind needs the full class
+                // string to appear as a source-code literal so the compiler
+                // includes it — listing both directions here is intentional.
+                tilt: "group-hover/thumb:-rotate-6",
               },
               {
                 // Eligibility hook — short, direct question pointing the
@@ -365,6 +369,7 @@ const Index = () => {
                 to2: "#C9A89A",
                 illustration: checklistIcon,
                 alt: "Klemmbrett mit Checkliste",
+                tilt: "group-hover/thumb:rotate-6",
               },
               {
                 // BMI Rechner tool — already lives at /bmi-rechner.
@@ -375,6 +380,7 @@ const Index = () => {
                 to2: "#A8B596",
                 illustration: calculatorIcon,
                 alt: "Taschenrechner",
+                tilt: "group-hover/thumb:rotate-6",
               },
             ].map((c) => (
               <Link
@@ -386,16 +392,19 @@ const Index = () => {
               >
                 {/* Gradient backdrop stays static; the illustration floats
                     above it and tilts + scales up on hover for a touch of
-                    micro-interaction. Bumped from 56 → 64 px so the 3D
-                    objects feel a touch more present in the row. */}
-                <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden relative">
+                    micro-interaction. The hover is scoped to the circle via
+                    a named Tailwind group (`group/thumb`) so the rest of the
+                    card doesn't trigger it — that way the arrow on the right
+                    still slides on full-card hover (it uses the outer unnamed
+                    group). Tilt direction comes from `c.tilt` per illustration. */}
+                <div className="group/thumb h-16 w-16 shrink-0 rounded-full overflow-hidden relative">
                   <GradientArt from={c.from} to={c.to2} />
                   <img
                     src={c.illustration}
                     alt={c.alt}
                     loading="lazy"
                     decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6"
+                    className={`absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover/thumb:scale-110 ${c.tilt}`}
                   />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
