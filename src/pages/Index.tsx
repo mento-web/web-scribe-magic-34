@@ -458,17 +458,17 @@ const Index = () => {
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white drop-shadow-md">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
                 <Link to="/survey/women">
-                  <PillButton>
+                  <PillButton variant="light">
                     Jetzt abnehmen <ArrowRight className="h-4 w-4" />
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-foreground/60 max-w-md">
+              <p className="mt-8 text-xs text-white/80 max-w-md drop-shadow">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>
