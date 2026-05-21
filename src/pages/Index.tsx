@@ -448,9 +448,7 @@ const Index = () => {
           {/* min-h ladder: shorter on tiny phones so the floating "Diese
               Woche" card doesn't get pushed off-screen, restored to the
               original 420 / 520 from sm upward. The skin-texture banner
-              sits behind everything else; a soft left-to-right dark gradient
-              overlay improves legibility of the white headline without
-              washing out the photo on the right. */}
+              sits behind everything else. */}
           <div className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center">
             {/* Photo backdrop — covers the band edge-to-edge */}
             <img
@@ -459,22 +457,18 @@ const Index = () => {
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
             />
-            {/* Dark vignette only on the text side so the editorial
-                headline stays readable; the right half of the photo
-                (where the floating progress card lives) is untouched. */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/25 to-transparent" />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white drop-shadow-md">
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
                 <Link to="/survey/women">
-                  <PillButton variant="light">
+                  <PillButton>
                     Jetzt abnehmen <ArrowRight className="h-4 w-4" />
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-white/70 max-w-md drop-shadow">
+              <p className="mt-8 text-xs text-foreground/60 max-w-md">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>
