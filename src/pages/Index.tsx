@@ -39,7 +39,7 @@ import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
 // "20 % verlieren" lifestyle band (section 6). Optimised JPEG at
 // 1600 px wide (~400 kB) — visual quality is fine at that size since
 // the image is decorative texture and we crop it via object-cover.
-import skinBanner from "@/assets/skin-banner.jpg";
+import skinBanner from "@/assets/cocoon-banner.png";
 
 /* ============================================================================
    LANDING PAGE — `/` route
