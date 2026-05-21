@@ -137,7 +137,8 @@ const Termin = () => {
     const result = await bookSlot(email, selectedSlot.startIso);
     if (!result.ok) {
       setIsBooking(false);
-      setBookingError(result.error);
+      // Since result.ok is false, TS knows this is the { ok: false; error: string } variant
+      setBookingError((result as { ok: false; error: string }).error);
       return;
     }
 

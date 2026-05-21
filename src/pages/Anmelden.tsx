@@ -98,7 +98,10 @@ const Anmelden = () => {
     setIsLoading(true);
     setAuthError(null);
     void track(EVENTS.sign_in_attempted, { provider: "password" });
-    const { error } = await supabase.auth.signInWithPassword(values);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    });
     setIsLoading(false);
     if (error) {
       setAuthError("Anmeldedaten ungültig. Bitte versuchen Sie es erneut.");
