@@ -8,67 +8,18 @@ import {
 } from "@/components/ui/accordion";
 import { PageShell } from "@/components/PageShell";
 import { PillButton } from "@/components/PillButton";
+import { faqs } from "@/lib/faqs";
 
 /* ============================================================================
    FAQ — frequently asked questions (German).
    Wrapped in PageShell so it shares chrome with the other content pages.
    Visual language follows DESIGN.md: editorial serif heading, accordion list
    on a white surface, off-white CTA band at the end.
-   ========================================================================= */
 
-// Question data — keep all answers German and HMG-aware.
-const faqs = [
-  {
-    question: "Was ist eine GLP-1 Therapie?",
-    answer:
-      "GLP-1 (Glucagon-like Peptide-1) Therapien sind medizinische Behandlungen, die das Hormon GLP-1 nachahmen. Dieses Hormon reguliert den Blutzucker und reduziert das Hungergefühl. Die Therapie wird von lizenzierten Schweizer Ärzten verschrieben und begleitet.",
-  },
-  {
-    question: "Wie lange dauert der Fragebogen?",
-    answer:
-      "Der medizinische Fragebogen dauert etwa 3 Minuten. Er umfasst Fragen zu Ihrer Gesundheit, Ihrem Lebensstil und Ihren Zielen, damit unser Arztteam eine personalisierte Behandlungsempfehlung erstellen kann.",
-  },
-  {
-    question: "Ist die Behandlung in der Schweiz legal?",
-    answer:
-      "Ja, alle Behandlungen erfolgen unter ärztlicher Aufsicht gemäss dem Schweizer Heilmittelgesetz (HMG). Wir arbeiten ausschliesslich mit lizenzierten Schweizer Ärzten zusammen.",
-  },
-  {
-    question: "Wie wird das Medikament geliefert?",
-    answer:
-      "Die Lieferung erfolgt diskret direkt zu Ihrer Wohnadresse. Die Verpackung ist neutral und enthält keine Hinweise auf den Inhalt. Die Lieferzeit beträgt in der Regel 1–2 Werktage innerhalb der Schweiz.",
-  },
-  {
-    question: "Wie hoch sind die Kosten?",
-    answer:
-      "Die Kosten variieren je nach Behandlungsplan. Nach Ausfüllen des Fragebogens erhalten Sie eine transparente Preisübersicht. Alle Preise sind in Schweizer Franken (CHF) und verstehen sich inklusive Mehrwertsteuer.",
-  },
-  {
-    question: "Was passiert nach dem Fragebogen?",
-    answer:
-      "Ein lizenzierter Schweizer Arzt prüft Ihre Angaben innerhalb von 24 Stunden. Sie erhalten eine personalisierte Behandlungsempfehlung und können bei Zustimmung sofort mit der Therapie beginnen.",
-  },
-  {
-    question: "Sind meine Daten sicher?",
-    answer:
-      "Ja, wir verwenden verschlüsselte Verbindungen (SSL) und speichern alle medizinischen Daten gemäss den schweizerischen Datenschutzbestimmungen (DSG). Ihre Daten werden nie an Dritte weitergegeben.",
-  },
-  {
-    question: "Kann ich die Behandlung abbrechen?",
-    answer:
-      "Ja, Sie können die Behandlung jederzeit abbrechen. Bei Fragen oder Bedenken steht Ihnen unser Ärzteteam jederzeit zur Verfügung.",
-  },
-  {
-    question: "Gibt es Nebenwirkungen?",
-    answer:
-      "Wie bei allen Medikamenten können auch bei GLP-1 Therapien Nebenwirkungen auftreten. Die häufigsten sind Übelkeit, Durchfall oder Verstopfung. Ihr Arzt bespricht alle Risiken und Nebenwirkungen ausführlich mit Ihnen.",
-  },
-  {
-    question: "Wie erreiche ich den Kundensupport?",
-    answer:
-      "Unser Support-Team ist per E-Mail unter support@helvi.ch erreichbar. Für medizinische Fragen kontaktieren Sie bitte direkt Ihren behandelnden Arzt über das Patientenportal.",
-  },
-];
+   The question/answer data lives in src/lib/faqs.ts so the compact FAQ
+   band on the landing page (Index.tsx) can render a slice of the same
+   list — keep edits there if you change copy.
+   ========================================================================= */
 
 const FAQ = () => (
   <PageShell>

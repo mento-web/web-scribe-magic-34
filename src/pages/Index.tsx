@@ -19,9 +19,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { SiteHeader } from "@/components/SiteHeader";
 import { BmiWidget } from "@/components/BmiWidget";
 import { PillButton } from "@/components/PillButton";
+import { faqs } from "@/lib/faqs";
 import { EVENTS, track } from "@/lib/tracking";
 import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
@@ -581,6 +588,56 @@ const Index = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* === 8.5 Compact FAQ — top 5 questions sliced from /faq ===
+         Sits between the "100 % online" cards and the Wissen guide. Acts
+         as an objection-handling band on the landing page: the most
+         common questions answered inline without leaving the page, and a
+         single outline pill that routes to the full /faq page for the
+         rest. Data lives in src/lib/faqs.ts so this slice and the full
+         /faq page stay in sync. */}
+      <section className="mt-20 md:mt-28 px-4">
+        <div className="container mx-auto max-w-3xl">
+          {/* Header — same eyebrow + editorial-headline pattern as the
+              "Verschreibungspflichtige Behandlung" section above. */}
+          <div className="text-center mb-10 md:mb-14">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+              Hilfe
+            </p>
+            <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] tracking-tight">
+              Häufig gestellte<br />Fragen.
+            </h2>
+          </div>
+          {/* Accordion list — tighter vertical rhythm than the full /faq
+              page (py-4 trigger / pb-4 content vs. py-6 / pb-6) so this
+              compact band doesn't dominate the page. */}
+          <Accordion type="single" collapsible className="w-full">
+            {faqs.slice(0, 5).map((faq, index) => (
+              <AccordionItem
+                key={index}
+                value={`landing-faq-${index}`}
+                className="border-b border-border"
+              >
+                <AccordionTrigger className="text-left py-4 text-base md:text-lg font-medium hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4 leading-relaxed text-sm md:text-base">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          {/* Trailing CTA — outline pill so it sits quieter than the
+              primary "Jetzt starten" CTAs elsewhere on the page. */}
+          <div className="mt-10 text-center">
+            <Link to="/faq">
+              <PillButton variant="outline">
+                Alle Fragen ansehen <ArrowRight className="h-4 w-4" />
+              </PillButton>
+            </Link>
           </div>
         </div>
       </section>
