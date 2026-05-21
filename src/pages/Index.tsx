@@ -13,6 +13,9 @@ import {
   ShieldCheck,
   Play,
   Star,
+  BookOpen,
+  ClipboardCheck,
+  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -345,6 +348,7 @@ const Index = () => {
                 to: "/wissen",
                 from: "#F5D5C5",
                 to2: "#E0B5A0",
+                glyph: <BookOpen className="h-6 w-6" strokeWidth={1.5} />,
               },
               {
                 // Eligibility hook — short, direct question pointing the
@@ -355,6 +359,7 @@ const Index = () => {
                 to: "/survey/women",
                 from: "#E8C5B8",
                 to2: "#C9A89A",
+                glyph: <ClipboardCheck className="h-6 w-6" strokeWidth={1.5} />,
               },
               {
                 // BMI Rechner tool — already lives at /bmi-rechner.
@@ -363,6 +368,7 @@ const Index = () => {
                 to: "/bmi-rechner",
                 from: "#C9D2BB",
                 to2: "#A8B596",
+                glyph: <Calculator className="h-6 w-6" strokeWidth={1.5} />,
               },
             ].map((c) => (
               <Link
@@ -372,8 +378,10 @@ const Index = () => {
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
+                {/* The glyph rides inside the gradient pill; GradientArt
+                    centres it in the available space automatically. */}
                 <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden">
-                  <GradientArt from={c.from} to={c.to2} />
+                  <GradientArt from={c.from} to={c.to2} glyph={c.glyph} />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
                   {c.label}
