@@ -384,18 +384,18 @@ const Index = () => {
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
-                {/* Gradient backdrop (GradientArt) sits inside the circle;
-                    the transparent illustration floats above it so the soft
-                    pastel gradient shows through the empty space around the
-                    3D object. Layout matches the original tile dimensions. */}
-                <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden relative">
+                {/* Gradient backdrop stays static; the illustration floats
+                    above it and tilts + scales up on hover for a touch of
+                    micro-interaction. Bumped from 56 → 64 px so the 3D
+                    objects feel a touch more present in the row. */}
+                <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden relative">
                   <GradientArt from={c.from} to={c.to2} />
                   <img
                     src={c.illustration}
                     alt={c.alt}
                     loading="lazy"
                     decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6"
                   />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
