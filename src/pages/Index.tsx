@@ -8,9 +8,6 @@ import {
   Globe,
   X,
   Leaf,
-  MessageCircle,
-  LayoutDashboard,
-  ShieldCheck,
   Play,
   Star,
 } from "lucide-react";
@@ -40,6 +37,13 @@ import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
 // 1600 px wide (~400 kB) — visual quality is fine at that size since
 // the image is decorative texture and we crop it via object-cover.
 import cocoonBanner from "@/assets/cocoon-banner.jpg";
+// Photography for the three "100 % online" feature cards (section 8).
+// Each is an optimised JPEG at 1400 px wide (~80–240 kB). Displayed inside
+// a rounded inset window, cropped via object-cover so the focal subject
+// (doctor's hands, phone screen, injection pen) stays centred.
+import doctorChat from "@/assets/doctor-chat.jpg";
+import appDashboard from "@/assets/app-dashboard.jpg";
+import injectionPen from "@/assets/injection-pen.jpg";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -520,9 +524,10 @@ const Index = () => {
 
       {/* === 8. Online features — three "100 % online" cards ===
          Anchor target for the header's "Wie es funktioniert" link. Each card
-         has a tinted background, a short headline, and a GradientArt block
-         with a glyph (chat bubble, dashboard, shield) standing in for the
-         eventual screenshot or illustration. */}
+         is a tinted band with a short headline up top and a real photo in
+         the inset window below — doctor + GLP-1 pens for the chat card, a
+         phone showing the helvi app for the dashboard card, and a GLP-1
+         injection pen on a peach backdrop for the "geprüft" card. */}
       <section id="so-funktioniert" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
           <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
@@ -533,26 +538,20 @@ const Index = () => {
               {
                 title: "Mit Ihrem Arzt 24/7 chatten",
                 tint: "hsl(var(--tint-peach))",
-                from: "#FBE3D2",
-                to: "#E8B89E",
-                glyph: <MessageCircle className="h-12 w-12" strokeWidth={1.25} />,
-                label: "Live Chat",
+                image: doctorChat,
+                alt: "Ärztin macht Notizen neben GLP-1 Injektionspens",
               },
               {
                 title: "Ziele an einem Ort verwalten",
                 tint: "hsl(var(--tint-lavender))",
-                from: "#D4C5E8",
-                to: "#B8A5D5",
-                glyph: <LayoutDashboard className="h-12 w-12" strokeWidth={1.25} />,
-                label: "Dashboard",
+                image: appDashboard,
+                alt: "helvi App auf dem Smartphone mit Gewichtsverlauf",
               },
               {
                 title: "Klinisch geprüfte, zugelassene Behandlungen",
                 tint: "hsl(var(--tint-powder-blue))",
-                from: "#C8D6E5",
-                to: "#9FB4CB",
-                glyph: <ShieldCheck className="h-12 w-12" strokeWidth={1.25} />,
-                label: "Geprüft",
+                image: injectionPen,
+                alt: "GLP-1 Injektionspen auf pfirsichfarbenem Hintergrund",
               },
             ].map((c) => (
               <div
@@ -565,8 +564,17 @@ const Index = () => {
                     {c.title}
                   </h3>
                 </div>
+                {/* Inset photo window — same dimensions as the previous
+                    GradientArt placeholder so the card heights stay
+                    consistent across the 3-up row. */}
                 <div className="relative flex-1 min-h-[180px] md:min-h-[200px] mx-6 mb-6 rounded-[12px] overflow-hidden">
-                  <GradientArt from={c.from} to={c.to} glyph={c.glyph} label={c.label} />
+                  <img
+                    src={c.image}
+                    alt={c.alt}
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
                 </div>
               </div>
             ))}
