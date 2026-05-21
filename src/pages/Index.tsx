@@ -349,6 +349,8 @@ const Index = () => {
                 label: "Wissen",
                 tint: "hsl(var(--tint-peach))",
                 to: "/wissen",
+                from: "#F5D5C5",
+                to2: "#E0B5A0",
                 illustration: bookIcon,
                 alt: "Aufgeschlagenes Buch",
               },
@@ -359,6 +361,8 @@ const Index = () => {
                 label: "Sind Sie geeignet?",
                 tint: "hsl(var(--tint-dusty-pink))",
                 to: "/survey/women",
+                from: "#E8C5B8",
+                to2: "#C9A89A",
                 illustration: checklistIcon,
                 alt: "Klemmbrett mit Checkliste",
               },
@@ -367,6 +371,8 @@ const Index = () => {
                 label: "BMI Rechner",
                 tint: "hsl(var(--tint-moss))",
                 to: "/bmi-rechner",
+                from: "#C9D2BB",
+                to2: "#A8B596",
                 illustration: calculatorIcon,
                 alt: "Taschenrechner",
               },
@@ -378,17 +384,18 @@ const Index = () => {
                 className="group flex items-center gap-4 rounded-[12px] p-4 hover:opacity-90 active:scale-[0.98] transition-all"
                 style={{ background: c.tint }}
               >
-                {/* White rounded well lifts the 3D illustration off the
-                    pastel card. The illustrations ship with their own white
-                    background and soft drop shadow, so a flat white container
-                    blends seamlessly — no clipping artefacts at the edges. */}
-                <div className="h-16 w-16 shrink-0 rounded-2xl bg-background overflow-hidden flex items-center justify-center">
+                {/* Gradient backdrop (GradientArt) sits inside the circle;
+                    the transparent illustration floats above it so the soft
+                    pastel gradient shows through the empty space around the
+                    3D object. Layout matches the original tile dimensions. */}
+                <div className="h-14 w-14 shrink-0 rounded-full overflow-hidden relative">
+                  <GradientArt from={c.from} to={c.to2} />
                   <img
                     src={c.illustration}
                     alt={c.alt}
                     loading="lazy"
                     decoding="async"
-                    className="h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
                   />
                 </div>
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
