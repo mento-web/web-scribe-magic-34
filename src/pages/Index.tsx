@@ -356,7 +356,7 @@ const Index = () => {
                 // Tilt direction on hover. Tailwind needs the full class
                 // string to appear as a source-code literal so the compiler
                 // includes it — listing both directions here is intentional.
-                tilt: "group-hover:rotate-6",
+                tilt: "group-hover:-rotate-6",
               },
               {
                 // Eligibility hook — short, direct question pointing the
