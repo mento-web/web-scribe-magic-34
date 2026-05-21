@@ -75,9 +75,9 @@ const UtilityBar = () => {
         {/* pr-10 on mobile reserves room for the absolute-positioned X so
             wrapping copy on narrow phones can't slide under the button. */}
         <p className="text-center pr-10 md:pr-0">
-          Online-Beratung fortsetzen?{" "}
+          Online-Beratung starten?{" "}
           <Link to="/survey/women" className="underline underline-offset-4 font-medium">
-            Weiter
+            Los geht's
           </Link>
         </p>
         {/* p-2 -m-2 expands the tap target to ~40px without growing the icon. */}
