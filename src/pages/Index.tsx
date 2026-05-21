@@ -32,18 +32,20 @@ import djKhaledHero from "@/assets/dj-khaled-hero.png";
 import bookIcon from "@/assets/illustrations/book-icon.png";
 import checklistIcon from "@/assets/illustrations/checklist-icon.png";
 import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
-// Skin-texture banner used as the photographic backdrop of the
-// "20 % verlieren" lifestyle band (section 6). Optimised JPEG at
-// 1600 px wide (~400 kB) — visual quality is fine at that size since
-// the image is decorative texture and we crop it via object-cover.
-import cocoonBanner from "@/assets/cocoon-banner.jpg";
-// Photography for the three "100 % online" feature cards (section 8).
-// Each is an optimised JPEG at 1400 px wide (~80–240 kB). Displayed inside
-// a rounded inset window, cropped via object-cover so the focal subject
-// (doctor's hands, phone screen, injection pen) stays centred.
-import doctorChat from "@/assets/doctor-chat.jpg";
-import appDashboard from "@/assets/app-dashboard.jpg";
+// Peach-toned GLP-1 injection pen — doubles as both the full-bleed
+// backdrop for the "20 % verlieren" lifestyle band (section 6) and one
+// of the three "100 % online" card photos previously planned for it.
+// We now use it only as the section 6 banner; the section 8 "Klinisch
+// geprüft" slot uses the doctor portrait instead. Optimised JPEG at
+// 1600 px wide (~150 kB).
 import injectionPen from "@/assets/injection-pen.jpg";
+// Photography for the three "100 % online" feature cards (section 8).
+// Each is an optimised JPEG at 1400 px wide (~150–240 kB). Displayed
+// inside a rounded inset window, cropped via object-cover so the focal
+// subject (parcel handoff, phone screen, doctor at desk) stays centred.
+import deliveryPhoto from "@/assets/delivery.jpg";
+import appDashboard from "@/assets/app-dashboard.jpg";
+import doctorChat from "@/assets/doctor-chat.jpg";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -454,9 +456,11 @@ const Index = () => {
               original 420 / 520 from sm upward. The skin-texture banner
               sits behind everything else. */}
           <div className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center">
-            {/* Photo backdrop — covers the band edge-to-edge */}
+            {/* Photo backdrop — covers the band edge-to-edge. Peach-toned
+                GLP-1 injection pen photo sits to the right of the band so
+                the headline copy on the left has a clean colour field. */}
             <img
-              src={cocoonBanner}
+              src={injectionPen}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover"
@@ -523,11 +527,12 @@ const Index = () => {
       </section>
 
       {/* === 8. Online features — three "100 % online" cards ===
-         Anchor target for the header's "Wie es funktioniert" link. Each card
-         is a tinted band with a short headline up top and a real photo in
-         the inset window below — doctor + GLP-1 pens for the chat card, a
-         phone showing the helvi app for the dashboard card, and a GLP-1
-         injection pen on a peach backdrop for the "geprüft" card. */}
+         Anchor target for the header's "Wie es funktioniert" link. Each
+         card is a tinted band with a short headline up top and a real
+         photo in the inset window below — Swiss Post delivery handoff for
+         the "schnelle Lieferung" card, a phone showing the helvi app for
+         the dashboard card, and a doctor at her desk for the "klinisch
+         geprüft" card. */}
       <section id="so-funktioniert" className="mt-20 md:mt-28 px-4 scroll-mt-20">
         <div className="container mx-auto">
           <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-12 max-w-2xl">
@@ -536,10 +541,10 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                title: "Mit Ihrem Arzt 24/7 chatten",
+                title: "Schnelle, diskrete Lieferung",
                 tint: "hsl(var(--tint-peach))",
-                image: doctorChat,
-                alt: "Ärztin macht Notizen neben GLP-1 Injektionspens",
+                image: deliveryPhoto,
+                alt: "Schweizerische Post übergibt Paket an der Haustür",
               },
               {
                 title: "Ziele an einem Ort verwalten",
@@ -550,8 +555,8 @@ const Index = () => {
               {
                 title: "Klinisch geprüfte, zugelassene Behandlungen",
                 tint: "hsl(var(--tint-powder-blue))",
-                image: injectionPen,
-                alt: "GLP-1 Injektionspen auf pfirsichfarbenem Hintergrund",
+                image: doctorChat,
+                alt: "Ärztin am Schreibtisch mit Stethoskop und GLP-1 Pens",
               },
             ].map((c) => (
               <div
