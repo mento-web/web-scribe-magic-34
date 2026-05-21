@@ -25,6 +25,7 @@ import {
 import { SiteHeader } from "@/components/SiteHeader";
 import { BmiWidget } from "@/components/BmiWidget";
 import { EVENTS, track } from "@/lib/tracking";
+import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
 import djKhaledHero from "@/assets/dj-khaled-hero.png";
@@ -238,16 +239,8 @@ const Index = () => {
     { name: "Lara R.", loc: "Lausanne", text: "Die Lieferung war diskret und schnell. Der Service ist erstklassig." },
   ];
 
-  // Health Guide placeholder articles. These are stubs until the blog exists —
-  // each title pairs with a pastel tint variable for its thumbnail background.
-  const articles = [
-    { title: "Wie GLP-1 funktioniert — einfach erklärt", read: "5 min Lesedauer", tint: "var(--tint-lavender)" },
-    { title: "Welche Nebenwirkungen sind normal?", read: "4 min Lesedauer", tint: "var(--tint-peach)" },
-    { title: "Abnehmen ohne Jojo-Effekt: was Studien zeigen", read: "7 min Lesedauer", tint: "var(--tint-moss)" },
-    { title: "Ernährung während der GLP-1 Therapie", read: "6 min Lesedauer", tint: "var(--tint-powder-blue)" },
-    { title: "Bewegung als Teil der Behandlung", read: "5 min Lesedauer", tint: "var(--tint-dusty-pink)" },
-    { title: "GLP-1 und Versicherung: das müssen Sie wissen", read: "8 min Lesedauer", tint: "var(--tint-taupe)" },
-  ];
+  // Health Guide placeholder articles live in src/lib/articles.ts so the
+  // dedicated /wissen page can render the same set. Edit there to add posts.
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -337,30 +330,37 @@ const Index = () => {
       </section>
 
       {/* === 5. Secondary cards — three small tinted CTAs under the twin cards ===
-         Insurance check, DJ Khaled's journey, and pricing — each a soft tile
-         with a gradient thumbnail, a label, and a small circular arrow. */}
+         Wissen (blog index), Eignungs-Check (survey funnel entry), and the
+         BMI Rechner tool — each a soft tile with a gradient thumbnail, a
+         label, and a small circular arrow. Tint positions are unchanged from
+         the original three-card composition so the visual rhythm stays put. */}
       <section className="px-4 mt-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               {
-                label: "Kostenloser Versicherungs-Check",
+                // Editorial entry point — links to the dedicated blog index.
+                label: "Wissen",
                 tint: "hsl(var(--tint-peach))",
-                to: "/survey/women",
+                to: "/wissen",
                 from: "#F5D5C5",
                 to2: "#E0B5A0",
               },
               {
-                label: "DJ Khaleds Helvi-Reise",
+                // Eligibility hook — short, direct question pointing the
+                // visitor straight into the survey funnel (women's flow,
+                // matching the rest of the page's default funnel entry).
+                label: "Sind Sie geeignet?",
                 tint: "hsl(var(--tint-dusty-pink))",
                 to: "/survey/women",
                 from: "#E8C5B8",
                 to2: "#C9A89A",
               },
               {
-                label: "GLP-1 zum besten Preis",
+                // BMI Rechner tool — already lives at /bmi-rechner.
+                label: "BMI Rechner",
                 tint: "hsl(var(--tint-moss))",
-                to: "/pricing",
+                to: "/bmi-rechner",
                 from: "#C9D2BB",
                 to2: "#A8B596",
               },
