@@ -226,6 +226,22 @@ const AvatarTile = ({ name, gradient }: { name: string; gradient: string }) => (
 );
 
 /* ============================================================================
+   LAUNCH FEATURE FLAGS
+
+   These switches hide entire landing-page sections without removing their
+   code. To bring a section back, flip its flag from `false` to `true` and
+   redeploy — no other edits needed. The data arrays inside each guarded
+   block stay referenced (so TS sees them as "used") even while the section
+   is gated off, which keeps the reinstate path truly one-touch.
+
+   Currently hidden:
+     • Section 9  (3×3 member grid + 10'000+ stat + testimonial carousel)
+     • Section 10 (Swiss MD advisor cards — "Beispielprofile" placeholders)
+   ========================================================================= */
+const SHOW_MEMBER_GRID = false;
+const SHOW_EXPERT_ADVISORS = false;
+
+/* ============================================================================
    Index — the assembled landing page
 
    Composes the 14 sections in display order. Static data (member names,
@@ -595,121 +611,129 @@ const Index = () => {
          Two-column composition. Left: nine "member tiles" (initial + gradient,
          play-button on hover) standing in for real testimonial videos. Right:
          huge serif "10'000+ Mitglieder" stat with a 95 % satisfaction check.
-         Below: a centered pull-quote carousel (shadcn Carousel) of 5 quotes. */}
-      <section className="mt-20 md:mt-28 px-4">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-            <div className="lg:col-span-7">
-              <div className="grid grid-cols-3 gap-3">
-                {memberNames.map((m) => (
-                  <AvatarTile key={m.name} name={m.name} gradient={m.gradient} />
-                ))}
+         Below: a centered pull-quote carousel (shadcn Carousel) of 5 quotes.
+         Gated behind SHOW_MEMBER_GRID — flip the flag at the top of this
+         file to bring the section back. */}
+      {SHOW_MEMBER_GRID && (
+        <section className="mt-20 md:mt-28 px-4">
+          <div className="container mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+              <div className="lg:col-span-7">
+                <div className="grid grid-cols-3 gap-3">
+                  {memberNames.map((m) => (
+                    <AvatarTile key={m.name} name={m.name} gradient={m.gradient} />
+                  ))}
+                </div>
+              </div>
+              <div className="lg:col-span-5">
+                <div className="flex items-center gap-2 mb-6">
+                  <Check className="h-5 w-5" strokeWidth={2} />
+                  <p className="text-sm font-medium">95 % bewerten ihre Erfahrung positiv</p>
+                </div>
+                <h2 className="font-editorial text-5xl md:text-7xl leading-[0.95] tracking-tight">
+                  10'000+<br />Mitglieder<br />und es werden<br />mehr.
+                </h2>
               </div>
             </div>
-            <div className="lg:col-span-5">
-              <div className="flex items-center gap-2 mb-6">
-                <Check className="h-5 w-5" strokeWidth={2} />
-                <p className="text-sm font-medium">95 % bewerten ihre Erfahrung positiv</p>
-              </div>
-              <h2 className="font-editorial text-5xl md:text-7xl leading-[0.95] tracking-tight">
-                10'000+<br />Mitglieder<br />und es werden<br />mehr.
-              </h2>
-            </div>
-          </div>
 
-          {/* Pull-quote carousel — loops through 5 anonymized testimonials */}
-          <div className="mt-20 md:mt-24 max-w-4xl mx-auto">
-            <Carousel opts={{ loop: true }}>
-              <CarouselContent>
-                {testimonials.map((t) => (
-                  <CarouselItem key={t.name}>
-                    <div className="text-center px-4 md:px-12">
-                      <div className="flex justify-center gap-1 mb-6">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star key={i} className="h-4 w-4 fill-foreground text-foreground" />
-                        ))}
+            {/* Pull-quote carousel — loops through 5 anonymized testimonials */}
+            <div className="mt-20 md:mt-24 max-w-4xl mx-auto">
+              <Carousel opts={{ loop: true }}>
+                <CarouselContent>
+                  {testimonials.map((t) => (
+                    <CarouselItem key={t.name}>
+                      <div className="text-center px-4 md:px-12">
+                        <div className="flex justify-center gap-1 mb-6">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className="h-4 w-4 fill-foreground text-foreground" />
+                          ))}
+                        </div>
+                        <p className="font-editorial text-3xl md:text-5xl leading-[1.1] mb-8">
+                          «{t.text}»
+                        </p>
+                        <p className="text-sm font-semibold">{t.name}</p>
+                        <p className="text-xs text-muted-foreground">{t.loc} · helvi member</p>
                       </div>
-                      <p className="font-editorial text-3xl md:text-5xl leading-[1.1] mb-8">
-                        «{t.text}»
-                      </p>
-                      <p className="text-sm font-semibold">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.loc} · helvi member</p>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <div className="flex justify-center gap-3 mt-8">
-                <CarouselPrevious className="static translate-y-0" />
-                <CarouselNext className="static translate-y-0" />
-              </div>
-            </Carousel>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="flex justify-center gap-3 mt-8">
+                  <CarouselPrevious className="static translate-y-0" />
+                  <CarouselNext className="static translate-y-0" />
+                </div>
+              </Carousel>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* === 10. Expert credibility — Swiss MD advisors ===
          Three stat blocks at the top (FMH licensing, clinical study weeks,
          Swiss data protection), then three placeholder advisor cards. The
          "Beispielprofile" caption below the cards flags that the names are
-         placeholders until real Swiss advisors are confirmed. */}
-      <section className="mt-20 md:mt-28 px-4">
-        <div className="container mx-auto">
-          <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-14 max-w-3xl">
-            Unterstützt von führenden<br />Schweizer Gesundheitsexperten.
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {[
-              { stat: "FMH", label: "Vom Bund zugelassene Ärzte" },
-              { stat: "68 Wo.", label: "Klinisch geprüfte Studien" },
-              { stat: "CH", label: "Datenschutz nach Schweizer Standard" },
-            ].map((s) => (
-              <div key={s.stat} className="border-t border-border pt-6">
-                <p className="font-editorial text-5xl md:text-6xl mb-3">{s.stat}</p>
-                <p className="text-sm text-muted-foreground max-w-xs">{s.label}</p>
-              </div>
-            ))}
-          </div>
+         placeholders until real Swiss advisors are confirmed. Gated behind
+         SHOW_EXPERT_ADVISORS — flip the flag at the top of this file to
+         bring the section back. */}
+      {SHOW_EXPERT_ADVISORS && (
+        <section className="mt-20 md:mt-28 px-4">
+          <div className="container mx-auto">
+            <h2 className="font-editorial text-4xl md:text-6xl leading-[0.95] mb-14 max-w-3xl">
+              Unterstützt von führenden<br />Schweizer Gesundheitsexperten.
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+              {[
+                { stat: "FMH", label: "Vom Bund zugelassene Ärzte" },
+                { stat: "68 Wo.", label: "Klinisch geprüfte Studien" },
+                { stat: "CH", label: "Datenschutz nach Schweizer Standard" },
+              ].map((s) => (
+                <div key={s.stat} className="border-t border-border pt-6">
+                  <p className="font-editorial text-5xl md:text-6xl mb-3">{s.stat}</p>
+                  <p className="text-sm text-muted-foreground max-w-xs">{s.label}</p>
+                </div>
+              ))}
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                name: "Dr. med. M. Berger",
-                title: "FMH Allgemeine Innere Medizin",
-                affiliation: "Universität Zürich",
-                gradient: "linear-gradient(135deg, #D4C5E8, #B8A5D5)",
-              },
-              {
-                name: "Dr. med. R. Keller",
-                title: "FMH Endokrinologie",
-                affiliation: "Universitätsspital Bern",
-                gradient: "linear-gradient(135deg, #C8D6E5, #9FB4CB)",
-              },
-              {
-                name: "Dr. med. N. Wyss",
-                title: "FMH Adipositas-Medizin",
-                affiliation: "Inselspital",
-                gradient: "linear-gradient(135deg, #C9D2BB, #A8B596)",
-              },
-            ].map((a) => (
-              <div key={a.name} className="rounded-[14px] bg-muted p-6 flex gap-4">
-                <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden">
-                  <div className="h-full w-full flex items-center justify-center" style={{ background: a.gradient }}>
-                    <span className="font-editorial text-2xl text-white/90">
-                      {a.name.split(" ").slice(-1)[0].charAt(0)}
-                    </span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  name: "Dr. med. M. Berger",
+                  title: "FMH Allgemeine Innere Medizin",
+                  affiliation: "Universität Zürich",
+                  gradient: "linear-gradient(135deg, #D4C5E8, #B8A5D5)",
+                },
+                {
+                  name: "Dr. med. R. Keller",
+                  title: "FMH Endokrinologie",
+                  affiliation: "Universitätsspital Bern",
+                  gradient: "linear-gradient(135deg, #C8D6E5, #9FB4CB)",
+                },
+                {
+                  name: "Dr. med. N. Wyss",
+                  title: "FMH Adipositas-Medizin",
+                  affiliation: "Inselspital",
+                  gradient: "linear-gradient(135deg, #C9D2BB, #A8B596)",
+                },
+              ].map((a) => (
+                <div key={a.name} className="rounded-[14px] bg-muted p-6 flex gap-4">
+                  <div className="h-16 w-16 shrink-0 rounded-full overflow-hidden">
+                    <div className="h-full w-full flex items-center justify-center" style={{ background: a.gradient }}>
+                      <span className="font-editorial text-2xl text-white/90">
+                        {a.name.split(" ").slice(-1)[0].charAt(0)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-sm mb-1">{a.name}</p>
+                    <p className="text-xs text-muted-foreground mb-2">{a.title}</p>
+                    <p className="text-xs text-muted-foreground">{a.affiliation}</p>
                   </div>
                 </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-sm mb-1">{a.name}</p>
-                  <p className="text-xs text-muted-foreground mb-2">{a.title}</p>
-                  <p className="text-xs text-muted-foreground">{a.affiliation}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-4">Beispielprofile.</p>
           </div>
-          <p className="text-xs text-muted-foreground/60 mt-4">Beispielprofile.</p>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* === 11. Health Guide — placeholder article tiles ===
          Six article cards with gradient thumbnails and read-time captions.
