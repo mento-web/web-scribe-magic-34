@@ -410,7 +410,11 @@ const Index = () => {
                 <p className="flex-1 text-sm md:text-base font-medium leading-snug text-foreground">
                   {c.label}
                 </p>
-                <ArrowCircleButton />
+                {/* Light nudge on card hover — 2 px slide over 500 ms with
+                    ease-out, deliberately slower than the illustration tilt
+                    so the arrow reads as "settling forward" rather than
+                    eagerly leading. */}
+                <ArrowCircleButton className="group-hover:translate-x-0.5 transition-transform duration-500 ease-out" />
               </Link>
             ))}
           </div>
