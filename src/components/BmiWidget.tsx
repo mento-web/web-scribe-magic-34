@@ -59,22 +59,28 @@ export const BmiWidget = ({ variant = "light" }: BmiWidgetProps) => {
          left/right via translate-x when the selection changes. The
          labels themselves stay in place; only their colour swaps so
          the chosen one reads white-on-black (light variant) or
-         black-on-white (dark variant). */}
+         black-on-white (dark variant).
+
+         Sizing notes: no inner padding on the track and a flat 50 %
+         thumb width — translate-x-full then moves it exactly to the
+         right slot. Earlier attempt used w-[calc(50%-4px)] but CSS
+         calc requires whitespace around the minus, which Tailwind's
+         arbitrary value syntax doesn't allow inline (would need
+         `calc(50%_-_4px)`); easier to skip the padding altogether. */}
       <div
         role="group"
         aria-label="Geschlecht"
-        className={`relative rounded-full p-1 flex ${
+        className={`relative rounded-full flex ${
           isDark ? "bg-white/10" : "bg-muted"
         }`}
       >
-        {/* The sliding thumb. inset-y-1 / left-1 sit it inside the 4 px
-            track padding; width is half the track minus that padding so
-            translate-x-full moves it exactly to the right slot. A small
-            shadow lifts it off the track so the active option feels
-            tactile rather than just a colour swap. */}
+        {/* The sliding thumb — full height, half the track width,
+            translates exactly one full thumb width when men is selected.
+            A subtle shadow lifts it off the track so the active option
+            feels tactile rather than just a colour swap. */}
         <span
           aria-hidden="true"
-          className={`pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-full shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          className={`pointer-events-none absolute inset-y-0 left-0 w-1/2 rounded-full shadow-sm transition-transform duration-300 ease-out ${
             isDark ? "bg-white" : "bg-foreground"
           } ${gender === "men" ? "translate-x-full" : "translate-x-0"}`}
         />
