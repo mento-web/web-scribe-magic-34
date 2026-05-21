@@ -458,7 +458,10 @@ const Index = () => {
               className="absolute inset-0 h-full w-full object-cover"
             />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white drop-shadow-md">
+              {/* White editorial headline against the warm skin photo;
+                  drop-shadow-lg gives enough contrast against the lighter
+                  skin highlights without needing a separate overlay. */}
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white [text-shadow:0_2px_16px_rgb(0_0_0/0.35)]">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
@@ -468,7 +471,7 @@ const Index = () => {
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-white/80 max-w-md drop-shadow">
+              <p className="mt-8 text-xs text-white/85 max-w-md [text-shadow:0_1px_6px_rgb(0_0_0/0.4)]">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>
