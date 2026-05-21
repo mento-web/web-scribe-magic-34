@@ -35,6 +35,11 @@ import djKhaledHero from "@/assets/dj-khaled-hero.png";
 import bookIcon from "@/assets/illustrations/book-icon.png";
 import checklistIcon from "@/assets/illustrations/checklist-icon.png";
 import calculatorIcon from "@/assets/illustrations/calculator-icon.png";
+// Skin-texture banner used as the photographic backdrop of the
+// "20 % verlieren" lifestyle band (section 6). Optimised JPEG at
+// 1600 px wide (~400 kB) — visual quality is fine at that size since
+// the image is decorative texture and we crop it via object-cover.
+import skinBanner from "@/assets/skin-banner.jpg";
 
 /* ============================================================================
    LANDING PAGE — `/` route
@@ -442,34 +447,34 @@ const Index = () => {
         <div className="container mx-auto">
           {/* min-h ladder: shorter on tiny phones so the floating "Diese
               Woche" card doesn't get pushed off-screen, restored to the
-              original 420 / 520 from sm upward. */}
-          <div
-            className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center"
-            style={{
-              background:
-                "radial-gradient(120% 80% at 10% 20%, #F7E6D5 0%, #EFD4C0 35%, #E0B8A0 100%)",
-            }}
-          >
-            <div
-              className="absolute -top-32 -right-20 h-96 w-96 rounded-full blur-3xl opacity-50"
-              style={{ background: "#FBE3D2" }}
+              original 420 / 520 from sm upward. The skin-texture banner
+              sits behind everything else; a soft left-to-right dark gradient
+              overlay improves legibility of the white headline without
+              washing out the photo on the right. */}
+          <div className="relative rounded-[14px] overflow-hidden min-h-[360px] sm:min-h-[420px] md:min-h-[520px] flex items-center">
+            {/* Photo backdrop — covers the band edge-to-edge */}
+            <img
+              src={skinBanner}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover"
             />
-            <div
-              className="absolute -bottom-40 -left-20 h-96 w-96 rounded-full blur-3xl opacity-40"
-              style={{ background: "#E8B89E" }}
-            />
+            {/* Dark vignette only on the text side so the editorial
+                headline stays readable; the right half of the photo
+                (where the floating progress card lives) is untouched. */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/25 to-transparent" />
             <div className="relative z-10 p-8 md:p-16 max-w-2xl">
-              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-foreground">
+              <h2 className="font-editorial text-5xl md:text-7xl lg:text-[88px] leading-[0.95] tracking-tight text-white drop-shadow-md">
                 20 % Ihres<br />Gewichts<br />verlieren — und<br />es halten.
               </h2>
               <div className="mt-8">
                 <Link to="/survey/women">
-                  <PillButton>
+                  <PillButton variant="light">
                     Jetzt abnehmen <ArrowRight className="h-4 w-4" />
                   </PillButton>
                 </Link>
               </div>
-              <p className="mt-8 text-xs text-foreground/50 max-w-md">
+              <p className="mt-8 text-xs text-white/70 max-w-md drop-shadow">
                 Basiert auf klinischen Studiendaten. Ergebnisse können individuell variieren.
               </p>
             </div>
