@@ -33,7 +33,7 @@ import { EVENTS, track } from "@/lib/tracking";
 import { articles } from "@/lib/articles";
 import heroProduct from "@/assets/hero-product.jpg";
 import glp1Pens from "@/assets/glp1-pens.png";
-import djKhaledHero from "@/assets/dj-khaled-hero.png";
+import heroPortrait from "@/assets/helvi-hero-portrait.png";
 // 3D-rendered illustrations for the three secondary CTA tiles. Each ships
 // at 512px wide with built-in soft shadows; sit them inside a white well so
 // the illustration's own white background blends seamlessly.
@@ -69,7 +69,7 @@ import doctorChat from "@/assets/doctor-chat.jpg";
      1.  Utility bar          — thin royal-blue strip with "resume visit" link
      2.  Header               — slim sticky nav with helvi wordmark + account
       3.  Hero                 — huge "Gesünder werden mit helvi." + trust list
-     4.  Twin hero cards      — lavender GLP-1 pens + DJ Khaled portrait
+     4.  Twin hero cards      — lavender GLP-1 pens + helvi model portrait
      5.  Secondary cards      — 3 small tinted CTAs under the twin cards
      6.  Lifestyle band       — full-bleed "20 % verlieren" with glass card
      7.  BMI Rechner          — restyled BMI form (anchor #bmi-rechner)
@@ -293,7 +293,7 @@ const Index = () => {
 
       {/* === 4. Twin hero cards — the two big photo CTAs side-by-side ===
          Left card uses the lavender GLP-1 pen shot, right card uses the
-         DJ Khaled "helvi" portrait. Both route into the survey funnel. */}
+         "helvi" model portrait. Both route into the survey funnel. */}
       <section className="px-4">
         <div className="container mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -320,7 +320,7 @@ const Index = () => {
                 </PillButton>
               </div>
             </Link>
-            {/* Right card — powder-blue background + DJ Khaled portrait */}
+            {/* Right card — powder-blue background + helvi model portrait */}
             <Link
               to="/survey/men"
               onClick={() => void track(EVENTS.cta_clicked, { cta_id: "hero_twin_men", target: "/survey/men" })}
@@ -328,8 +328,8 @@ const Index = () => {
               style={{ background: "hsl(var(--tint-powder-blue))" }}
             >
               <img
-                src={djKhaledHero}
-                alt="DJ Khaled mit helvi"
+                src={heroPortrait}
+                alt="Lächelnder Mann mit helvi"
                 className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-[1.02] transition-transform duration-700"
               />
               <div className="absolute top-6 left-6 md:top-8 md:left-8 z-10">

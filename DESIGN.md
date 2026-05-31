@@ -44,7 +44,7 @@ The palette is restrained and sophisticated.
 | `--tint-lavender` | dusty lavender | Twin hero card (left), lavender feature card |
 | `--tint-powder-blue` | powder blue | Twin hero card (right), shield feature card |
 | `--tint-peach` | warm peach | Insurance secondary CTA, chat feature card |
-| `--tint-dusty-pink` | dusty pink | Khaled-journey secondary CTA |
+| `--tint-dusty-pink` | dusty pink | Patient-journey secondary CTA |
 | `--tint-moss` | mossy green | Pricing secondary CTA |
 | `--tint-taupe` | warm taupe | (Was the product-showcase backdrop; currently unused) |
 
@@ -123,9 +123,9 @@ and product photography**.
 - **Left card** — lavender backdrop (`--tint-lavender`), GLP-1 pen product
   shot. White text upper-left ("Neue GLP-1 Optionen bei helvi"). Black pill
   CTA lower-right ("Jetzt starten →") routing to `/survey/women`.
-- **Right card** — powder-blue backdrop (`--tint-powder-blue`), DJ Khaled
-  portrait with a giant white "helvi" wordmark behind him. Same CTA pattern
-  routing to `/survey/men`.
+- **Right card** — powder-blue backdrop (`--tint-powder-blue`), a smiling
+  male model portrait with a giant white "helvi" wordmark behind him. Same CTA
+  pattern routing to `/survey/men`.
 - Subtle 2 % hover scale on the image inside each card.
 
 ---
@@ -140,7 +140,7 @@ backgrounds.
   `ArrowCircleButton` (small black circle with white arrow) on the right.
 - Helvi labels:
   - "Kostenloser Versicherungs-Check" (peach tint)
-  - "DJ Khaleds Helvi-Reise" (dusty pink tint)
+  - "Ihre Helvi-Reise" (dusty pink tint)
   - "GLP-1 zum besten Preis" (moss tint)
 
 ---
